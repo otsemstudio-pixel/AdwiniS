@@ -8,7 +8,7 @@ export const site = {
   whatsappNumber: '[NUMÉRO WHATSAPP]',
   email: '[EMAIL]',
   /** URL publique du site, utilisée pour le QR code par défaut et le lien de partage. */
-  url: '[URL DU SITE]',
+  url: 'https://www.adwinistudio.com/',
   city: 'KIGALI — RWANDA',
   year: 2026,
   socials: [
