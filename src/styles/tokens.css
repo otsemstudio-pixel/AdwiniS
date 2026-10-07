@@ -1,0 +1,99 @@
+/*
+ * Jetons de design Adwini Studio.
+ * Palette de marque : valeurs exactes de la charte. Les rôles (--bg, --text…)
+ * sont redéfinis en mode sombre ; les composants n'utilisent que les rôles.
+ *
+ * Contrastes vérifiés (WCAG 2.1, voir scripts/check.mjs) :
+ *   terre cuite #9A5B36 / ivoire #F5F1E8 : 4,74:1  → texte courant OK (≥ 4,5)
+ *   terre cuite #9A5B36 / blanc #FFFFFF  : 5,35:1
+ *   texte secondaire #5E5C55 / ivoire    : 5,93:1
+ *   texte tertiaire #8C877C / ivoire     : 3,17:1  → réservé aux éléments décoratifs
+ *                                                    et au texte ≥ 24 px en mode clair
+ *   terre cuite clair #C98A5E / encre    : 6,18:1
+ */
+
+/*
+ * Repli métrique de Fraunces : Georgia mise à l'échelle (size-adjust mesuré dans Chrome)
+ * pour que les titres gardent leur largeur quand la vraie police arrive (font-display: swap).
+ * Les polices ne sont pas préchargées : mesuré sur 3G + CPU ×4, le préchargement
+ * retardait le premier affichage d'environ une seconde.
+ */
+@font-face {
+  font-family: 'Fraunces Fallback';
+  font-weight: 700;
+  src: local('Georgia Bold'), local('Georgia-Bold');
+  size-adjust: 95.4%;
+}
+
+@font-face {
+  font-family: 'Fraunces Fallback';
+  font-weight: 400;
+  src: local('Georgia');
+  size-adjust: 105.9%;
+}
+
+:root {
+  /* Palette de marque */
+  --ivory: #f5f1e8;
+  --white: #ffffff;
+  --ink: #16181c;
+  --terracotta: #9a5b36;
+  --terracotta-light: #c98a5e;
+  --line: #ddd6c7;
+  --grey-2: #5e5c55;
+  --grey-3: #8c877c;
+
+  /* Rôles — mode clair */
+  color-scheme: light;
+  --bg: var(--ivory);
+  --surface: var(--white);
+  --text: var(--ink);
+  --muted: var(--grey-2);
+  --faint: var(--grey-3);
+  --accent: var(--terracotta);
+  --border: var(--line);
+  --placeholder-bg: var(--line);
+  --nav-scrolled: rgb(245 241 232 / 0.9);
+
+  /* Blocs inversés (section Technologie, menu, pied de page) */
+  --inverse-bg: var(--ink);
+  --inverse-text: var(--ivory);
+  --inverse-muted: #b9b3a6;
+  --inverse-accent: var(--terracotta-light);
+  --inverse-border: #34373d;
+
+  /* Typographie */
+  --font-display: 'Fraunces', 'Fraunces Fallback', Georgia, 'Times New Roman', serif;
+  --font-body: 'Archivo', 'Helvetica Neue', Helvetica, sans-serif;
+  --font-mono: 'Space Mono', 'Courier New', monospace;
+
+  /* Espacements */
+  --gutter: clamp(16px, 5vw, 56px);
+  --max: 1360px;
+  --section-space: clamp(72px, 13vw, 176px);
+  --nav-h: 64px;
+  --cut: 22px;
+  --cut-sm: 18px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: var(--ink);
+    --surface: #1f2227;
+    --text: var(--ivory);
+    --muted: #b9b3a6;
+    --faint: var(--grey-3);
+    --accent: var(--terracotta-light);
+    --border: #34373d;
+    --placeholder-bg: #2a2d33;
+    --nav-scrolled: rgb(22 24 28 / 0.9);
+
+    --inverse-bg: var(--ivory);
+    --inverse-text: var(--ink);
+    --inverse-muted: var(--grey-2);
+    --inverse-accent: var(--terracotta);
+    --inverse-border: var(--line);
+  }
+}
