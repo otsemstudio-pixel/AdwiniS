@@ -113,6 +113,47 @@ Une fois le domaine acheté :
 
 Il n'y a aucun `requestAnimationFrame` dans le code. L'hydratation de React attend `requestIdleCallback`, pour ne pas retarder le premier affichage.
 
+## Carte du fondateur et carte de brief
+
+### Carte du fondateur — `/carte` (français) et `/card` (anglais)
+
+Adresses : https://otsemstudio-pixel.github.io/AdwiniS/carte/ et `…/card/`.
+
+- **Accès** : la page n'est liée nulle part, sans mot de passe. Elle porte `noindex, nofollow` et n'apparaît ni dans `robots.txt` ni dans `sitemap.xml`.
+- **Contenu** : pré-rempli, non modifiable (le site affiché est l'adresse GitHub Pages). Il se trouve dans `src/data/site.ts` → `founder`, et le rôle traduit dans `content.*.ts` → `founderPage.role`.
+- **Emplacements à compléter** : `[EMAIL À REMPLIR]`, `[LIEN À REMPLIR]`, `[COMPTE À REMPLIR]`. Tant qu'ils restent entre crochets, ils n'apparaissent ni sur la carte ni dans le `.vcf`.
+- **QR code** : il mène à la page d'accueil (`site.url`), pas aux coordonnées.
+- **Exports** :
+  - PNG standard ;
+  - PNG haute définition (×3) ;
+  - format carré 1080 × 1080 ;
+  - contact `.vcf` ;
+  - partage natif, avec repli sur la copie du lien.
+
+### Carte de brief — la section contact
+
+- **Saisie** : six champs (nom, entreprise, besoins, phrase de 140 caractères, échéance, budget). Les choix sont des boutons, sans liste déroulante, et la carte se compose en direct.
+- **« Envoyer sur WhatsApp »** ouvre `wa.me/250799496971` avec un message lisible et un lien `/brief/?d=…`.
+  - Le paramètre `d` contient les réponses en JSON compact, compressé (`deflate-raw` natif) puis encodé en base64 sûr pour les URL.
+  - Aucun serveur n'intervient.
+- **Longueurs garanties** :
+  - message ≤ 600 caractères (hors lien) ;
+  - lien ≤ 800 ;
+  - URL WhatsApp ≤ 1 500, même avec des champs remplis au maximum : le message tronque alors la phrase, puis l'entreprise, puis le nom ; le lien garde la version complète.
+- **`/brief/?d=…`** (`noindex`) décode et **valide** chaque champ : forme, valeurs autorisées, longueurs.
+  - Un lien absent, coupé ou modifié affiche une page d'erreur propre.
+  - Le contenu est toujours rendu comme texte, jamais en HTML brut.
+- **La sortie rapide** « Écrire directement sur WhatsApp » ouvre une conversation sans formulaire.
+
+### Où modifier
+
+| Quoi | Où |
+|---|---|
+| Numéro WhatsApp | `src/data/site.ts` → `site.whatsappNumber` |
+| Textes du formulaire, du message, des pages | `content.*.ts` → `brief`, `briefPage`, `founderPage` |
+| Choix proposés (besoins, échéances, budgets) | `src/utils/brief.ts` (codes) + `content.*.ts` (libellés) |
+| Visuels des cartes (un seul moteur) | `src/components/BusinessCard.tsx` : `CardFront`, `CardBack`, `CardSquare`, `BriefCard` |
+
 ## Mouvement
 
 Règle : **une animation forte par section**, et **seuls `transform` et `opacity` sont animés**. Seule exception : le tracé des traits SVG du logo et des illustrations (`stroke-dashoffset`). Aucune bibliothèque d'animation. Le CSS se trouve en fin de `src/styles/components.css` et de `src/styles/sections.css`.

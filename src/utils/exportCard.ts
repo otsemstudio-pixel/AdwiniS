@@ -59,11 +59,12 @@ async function svgToImage(svg: SVGSVGElement, css: string, width: number, height
 
 /**
  * Dessine les faces fournies l'une sous l'autre dans un PNG.
- * `width`/`height` : dimensions du viewBox d'une face ; `scale` : densité de sortie.
+ * `width`/`height` : dimensions du viewBox d'une face ; `scale` : densité de sortie ;
+ * `gap` : marge autour des faces (0 pour un format exact, ex. 1080 × 1080).
  */
-export async function facesToPng(faces: SVGSVGElement[], width: number, height: number, background: string, scale = 2) {
+export async function facesToPng(faces: SVGSVGElement[], width: number, height: number, background: string, scale = 2, gap = 40) {
   const css = await embeddedFonts();
-  const gap = 40;
+
   const canvas = document.createElement('canvas');
   canvas.width = (width + gap * 2) * scale;
   canvas.height = (height * faces.length + gap * (faces.length + 1)) * scale;

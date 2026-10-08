@@ -1218,64 +1218,121 @@
   }
 }
 
-/* ═══ 12 · Contact ═══ */
+/* ═══ 12 · Contact — la carte de brief ═══ */
 
-.contact .wrap {
+/* Mobile : l'aperçu d'abord (on voit la carte se construire en saisissant), puis le formulaire. */
+.brief__grid {
   display: grid;
   gap: 2.5rem;
 }
 
-.contact .section__head {
-  margin-bottom: 1rem;
+.brief__aside {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
 }
 
-/* WhatsApp en premier, le plus visible : un grand bloc plein, à l'échelle d'un titre. */
-.contact__whatsapp {
-  position: relative;
+.bcard--single {
+  perspective: none;
+}
+
+.brief__actions {
   display: grid;
-  gap: 1.5rem;
-  padding: clamp(1.75rem, 4vw, 3.5rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.brief__send {
+  grid-column: 1 / -1;
+}
+
+.brief__form {
+  display: grid;
+  gap: 2rem;
+  min-width: 0;
+}
+
+/* La sortie rapide : WhatsApp sans formulaire, en tête, impossible à manquer. */
+.brief__quick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: var(--stroke) solid var(--line);
   border-radius: var(--radius);
+}
+
+.brief__quick-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.brief__fields {
+  gap: 1.25rem;
+}
+
+.field__req {
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.field__input--area {
+  min-height: 6.5rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.field__input[aria-invalid='true'] {
+  border-color: var(--accent);
+}
+
+.field__counter {
+  justify-self: end;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+/* Choix par boutons-bascules, pas de liste déroulante : plus rapide au doigt. */
+.choice-group {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.choice-group__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.choice {
+  min-height: 44px;
+  padding: 0.5rem 1.05rem;
+  border: var(--stroke) solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition:
+    background-color 0.25s var(--ease-ui),
+    color 0.25s var(--ease-ui);
+}
+
+.choice[aria-pressed='true'] {
   background: var(--text);
   color: var(--bg);
 }
 
-.contact__whatsapp:focus-visible {
-  outline-offset: 4px;
-}
-
-.contact__whatsapp-label {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--fs-title);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  max-width: 11ch;
-  overflow-wrap: break-word;
-}
-
-.contact__detail {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: 0.1em;
-  overflow-wrap: anywhere;
-}
-
-.contact__arrow {
-  justify-self: end;
-  transition: transform 0.32s var(--ease-ui);
-}
-
-.contact__whatsapp:hover .contact__arrow,
-.contact__whatsapp:focus-visible .contact__arrow {
-  transform: translateX(4px);
-}
-
-.contact__secondary {
+.brief__other {
   display: grid;
-  gap: 2.5rem;
-  padding-left: 14%;
+  gap: 2rem;
+  padding-top: 1rem;
 }
 
 .contact__email {
@@ -1284,13 +1341,17 @@
   justify-items: start;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
   letter-spacing: -0.02em;
 }
 
-.contact__email .contact__detail {
+.contact__detail {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
   font-weight: 400;
+  letter-spacing: 0.1em;
   color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 .contact__social-list {
@@ -1300,34 +1361,22 @@
   margin-top: 1rem;
 }
 
-@media (min-width: 768px) {
-  .contact .wrap {
-    grid-template-columns: 1.5fr 1fr;
-    column-gap: 3rem;
-    align-items: end;
+@media (min-width: 1024px) {
+  .brief__grid {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    grid-template-areas: 'form aside';
+    column-gap: clamp(3rem, 5vw, 6rem);
+    align-items: start;
   }
 
-  .contact .section__head {
-    grid-column: 1 / -1;
+  .brief__form {
+    grid-area: form;
   }
 
-  .contact__secondary {
-    padding-left: 0;
-  }
-}
-
-@media (min-width: 1440px) {
-  .contact .wrap {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--gap);
-  }
-
-  .contact__whatsapp {
-    grid-column: 1 / 9;
-  }
-
-  .contact__secondary {
-    grid-column: 10 / 13;
+  .brief__aside {
+    grid-area: aside;
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
   }
 }
 

@@ -5,7 +5,7 @@
 
 export const site = {
   /** Numéro au format international, chiffres uniquement, sans « + » ni espaces (ex. 250788123456). */
-  whatsappNumber: '[NUMÉRO WHATSAPP]',
+  whatsappNumber: '250799496971',
   email: '[EMAIL]',
   /** URL publique du site, utilisée pour le QR code par défaut et le lien de partage. */
   url: 'https://otsemstudio-pixel.github.io/AdwiniS/',
@@ -16,6 +16,23 @@ export const site = {
     { label: 'LinkedIn', href: '[LIEN LINKEDIN]' },
     { label: 'Behance', href: '[LIEN BEHANCE]' },
   ],
+} as const;
+
+/**
+ * Carte du fondateur (pages /carte et /card) : pré-remplie, non modifiable.
+ * Le rôle est traduit dans content.*.ts (founderPage.role).
+ * Les valeurs entre crochets sont à compléter : tant qu'elles le restent,
+ * elles n'apparaissent ni sur la carte ni dans le contact .vcf.
+ */
+export const founder = {
+  name: "Kouamé N'nahssé Jean-David",
+  company: 'Adwini Studio',
+  phone: '+250 799 496 971',
+  /** Adresse affichée sur la carte (le site est publié sur GitHub Pages). */
+  website: 'otsemstudio-pixel.github.io/AdwiniS',
+  email: '[EMAIL À REMPLIR]',
+  linkedin: '[LIEN À REMPLIR]',
+  instagram: '[COMPTE À REMPLIR]',
 } as const;
 
 /** Prix mensuels en dollars US. `null` = sur devis. */

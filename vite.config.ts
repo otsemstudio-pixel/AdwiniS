@@ -1,5 +1,9 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = fileURLToPath(new URL('.', import.meta.url));
 
 /**
  * Précharge la police de titre seule (Outfit 600) : c'est celle du hero.
@@ -37,6 +41,15 @@ export default defineConfig({
   plugins: [react(), preloadTitleFont()],
   build: {
     target: 'es2019',
+    // Site principal + pages autonomes (non liées, non indexées) : /carte, /card, /brief.
+    rollupOptions: {
+      input: {
+        main: resolve(root, 'index.html'),
+        carte: resolve(root, 'carte/index.html'),
+        card: resolve(root, 'card/index.html'),
+        brief: resolve(root, 'brief/index.html'),
+      },
+    },
     cssCodeSplit: false,
     // Les polices restent des fichiers séparés : mises en cache, jamais dans le JS.
     assetsInlineLimit: 0,

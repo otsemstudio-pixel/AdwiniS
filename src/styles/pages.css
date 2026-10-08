@@ -1,0 +1,102 @@
+/* Pages autonomes : /carte, /card (carte du fondateur) et /brief (carte de brief reçue). */
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: var(--nav-h);
+  padding-inline: var(--margin);
+}
+
+.page-head__brand {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
+
+.page-head .wordmark {
+  height: 12px;
+  width: 99px;
+}
+
+.page {
+  padding-block: clamp(2rem, 6vw, 5rem) var(--space);
+}
+
+.page-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2rem var(--margin) 2.5rem;
+}
+
+.founder,
+.brief-page {
+  display: grid;
+  gap: 2rem;
+  max-width: calc(860px + 2 * var(--margin));
+  margin-inline: auto;
+}
+
+.founder__title {
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  text-transform: uppercase;
+  margin-block: 0.5rem 0.75rem;
+}
+
+.founder__card .bcard,
+.brief-page__card {
+  max-width: 860px;
+}
+
+.founder__square {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+  margin-top: 2rem;
+}
+
+.founder__square-card {
+  width: min(100%, 520px);
+  aspect-ratio: 1;
+}
+
+.founder__note {
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.brief-page__facts {
+  display: grid;
+  gap: 1rem;
+}
+
+.brief-page__facts div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.brief-page__facts dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brief-page__facts dd {
+  font-size: 1.125rem;
+  overflow-wrap: anywhere;
+}
+
+.brief-page--error {
+  justify-items: start;
+}
+
+@media (min-width: 768px) {
+  .founder__actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

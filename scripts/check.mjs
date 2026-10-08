@@ -404,6 +404,9 @@ section('Carte de visite');
   });
   ok(/Amani Uwase/.test(live.text) && /Kivu Coffee/.test(live.text), 'Aperçu mis à jour pendant la saisie');
   ok(live.qr > 100, 'QR code généré (vCard)');
+  // Boutons centrés à l'écran et page stabilisée avant de cliquer (la barre se retire au défilement).
+  await page.evaluate(() => document.querySelector('.cardmaker__actions').scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await new Promise((r) => setTimeout(r, 600));
   await page.click('.cardmaker__actions .btn:nth-child(1)'); // Retourner
   await new Promise((r) => setTimeout(r, 800));
   ok(await page.evaluate(() => document.querySelector('.bcard').classList.contains('is-flipped')), 'Retourner affiche le verso');
@@ -442,6 +445,144 @@ section('Carte de visite');
 }
 
 /* 12. 3G ---------------------------------------------------------------- */
+/* Cartes : fondateur et brief ---------------------------------------- */
+const pngSize = (file) => {
+  const b = readFileSync(file);
+  return `${b.readUInt32BE(16)}×${b.readUInt32BE(20)}`;
+};
+
+section('Carte du fondateur (/carte, /card)');
+{
+  const { page, context } = await newPage({ width: 1440 });
+  const downloads = resolve(out, 'founder');
+  mkdirSync(downloads, { recursive: true });
+  const cdp = await browser.target().createCDPSession();
+  await cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads, browserContextId: context.id });
+  await context.overridePermissions(base.replace(/\/AdwiniS\/$/, ''), ['clipboard-read', 'clipboard-write', 'clipboard-sanitized-write']);
+  await page.goto(base + 'carte/', { waitUntil: 'networkidle0' });
+  await page.waitForSelector('.bcard__face--back path[shape-rendering]', { timeout: 10000 }).catch(() => {});
+  const info = await page.evaluate(() => ({
+    robots: document.querySelector('meta[name="robots"]')?.content,
+    lang: document.documentElement.lang,
+    back: document.querySelector('.bcard__face--back svg').textContent,
+    qr: document.querySelector('[data-qr-text]')?.getAttribute('data-qr-text'),
+    inputs: document.querySelectorAll('main input, main textarea').length,
+  }));
+  ok(info.robots === 'noindex, nofollow', '/carte : noindex, nofollow');
+  ok(/Kouamé N'nahssé Jean-David/.test(info.back) && /Fondateur · Adwini Studio/.test(info.back) && /\+250 799 496 971/.test(info.back) && /otsemstudio-pixel\.github\.io\/AdwiniS/.test(info.back), 'Informations exactes du fondateur');
+  ok(!/\[/.test(info.back), 'Emplacements « [À REMPLIR] » absents de la carte');
+  ok(info.inputs === 0, 'Carte non modifiable (aucun champ)');
+  ok(info.qr === 'https://otsemstudio-pixel.github.io/AdwiniS/', 'QR code → page d’accueil', info.qr);
+  const click = async (text) => {
+    await page.evaluate((t) => [...document.querySelectorAll('.founder button')].find((b) => b.textContent.trim().startsWith(t)).click(), text);
+    await new Promise((r) => setTimeout(r, 1800));
+  };
+  await click('Retourner');
+  ok(await page.evaluate(() => document.querySelector('.bcard').classList.contains('is-flipped')), 'Retourner');
+  await click('Télécharger');
+  await click('Télécharger le contact');
+  await click('Télécharger en haute définition');
+  await click('Format carré');
+  await page.evaluate(() => {
+    // @ts-ignore
+    delete Navigator.prototype.share;
+  });
+  await click('Partager');
+  const files = readdirSync(downloads);
+  const has = (f) => files.includes(f);
+  const stem = 'adwini-kouame-n-nahsse-jean-david';
+  ok(has(`${stem}.png`), 'Export PNG standard', has(`${stem}.png`) ? pngSize(resolve(downloads, `${stem}.png`)) : files.join(', '));
+  ok(has(`${stem}-hd.png`), 'Export haute définition (×3)', has(`${stem}-hd.png`) ? pngSize(resolve(downloads, `${stem}-hd.png`)) : '');
+  ok(has(`${stem}-1080.png`) && pngSize(resolve(downloads, `${stem}-1080.png`)) === '1080×1080', 'Export carré 1080 × 1080', has(`${stem}-1080.png`) ? pngSize(resolve(downloads, `${stem}-1080.png`)) : '');
+  if (has(`${stem}.vcf`)) {
+    const vcf = readFileSync(resolve(downloads, `${stem}.vcf`), 'utf8');
+    ok(/FN:Kouamé N'nahssé Jean-David/.test(vcf) && /TEL;TYPE=CELL:\+250 799 496 971/.test(vcf) && !/\[/.test(vcf), 'Contact .vcf (sans emplacements)');
+  } else ok(false, 'Contact .vcf');
+  const clip = await page.evaluate(() => navigator.clipboard.readText().catch(() => ''));
+  ok(clip.endsWith('/carte/'), 'Partager : repli copie du lien', clip);
+  await page.goto(base + 'card/', { waitUntil: 'networkidle0' });
+  ok(await page.evaluate(() => document.documentElement.lang === 'en' && /Founder · Adwini Studio/.test(document.querySelector('.bcard__face--back svg').textContent)), '/card : version anglaise');
+  await context.close();
+  // Non liée et non indexée.
+  const homeHtml = readFileSync(resolve(root, 'dist/index.html'), 'utf8');
+  ok(!/href="[^"]*\/(carte|card)\/?"/.test(homeHtml), 'Aucun lien vers /carte depuis le site');
+  const robots = readFileSync(resolve(root, 'dist/robots.txt'), 'utf8');
+  const sitemap = readFileSync(resolve(root, 'dist/sitemap.xml'), 'utf8');
+  ok(!/carte|card|brief/.test(robots) && !/carte|card|brief/.test(sitemap.replace(/<!--[\s\S]*?-->/g, '')), 'Absente du robots.txt et du sitemap.xml');
+}
+
+section('Carte de brief (contact)');
+{
+  const { page, context } = await newPage({ width: 1440 });
+  await page.goto(base, { waitUntil: 'networkidle0' });
+  await page.evaluate(() => document.getElementById('contact').scrollIntoView({ behavior: 'instant' }));
+  await new Promise((r) => setTimeout(r, 1200));
+  const quick = await page.evaluate(() => [...document.querySelectorAll('.brief__quick a')].map((a) => a.href)[0]);
+  ok(/^https:\/\/wa\.me\/250799496971\?text=/.test(quick), 'Sortie rapide WhatsApp sans formulaire');
+  ok(await page.evaluate(() => [...document.querySelectorAll('.choice')].every((b) => b.tagName === 'BUTTON' && b.hasAttribute('aria-pressed'))), 'Choix en <button aria-pressed>');
+  ok(await page.evaluate(() => !document.querySelector('#contact select')), 'Aucune liste déroulante');
+  await page.click('.brief__send');
+  await new Promise((r) => setTimeout(r, 300));
+  ok(await page.evaluate(() => document.activeElement.id === 'brief-name' && /Il manque/.test(document.querySelector('.brief__aside [role=status]').textContent)), 'Envoi incomplet : champs manquants annoncés, focus placé');
+  await page.type('#brief-name', 'Amani Uwase');
+  await page.type('#brief-company', 'Kivu Coffee');
+  await page.type('#brief-sentence', 'Une identité et un site pour lancer notre café de spécialité à Kigali.');
+  const choose = (g, t) => page.evaluate((g, t) => [...document.querySelectorAll(`[aria-labelledby="${g}-label"] .choice`)].find((x) => x.textContent === t).click(), g, t);
+  await choose('brief-needs', 'Identité');
+  await choose('brief-needs', 'Interfaces');
+  await choose('brief-deadline', 'Ce mois-ci');
+  await choose('brief-budget', '600–1 200 $');
+  await new Promise((r) => setTimeout(r, 500));
+  const preview = await page.evaluate(() => document.querySelector('.brief__aside svg').textContent);
+  ok(/Amani Uwase/.test(preview) && /Kivu Coffee/.test(preview) && /BRF—/.test(preview) && /Ce mois-ci/.test(preview), 'Aperçu en direct de la carte de brief');
+  const wa = await page.evaluate(() => document.querySelector('.brief__send').href);
+  const text = new URL(wa).searchParams.get('text');
+  const link = text.match(/https?:\/\/\S+/)[0];
+  ok(wa.startsWith('https://wa.me/250799496971?text=') && /Je suis Amani Uwase, de Kivu Coffee\./.test(text) && /J’ai besoin de : Identité, Interfaces/.test(text) && /Budget : 600–1 200 \$/.test(text), 'Message WhatsApp lisible et structuré');
+  ok(text.length - link.length <= 600 && link.length <= 800 && wa.length <= 1500, 'Longueurs : message ≤ 600, lien ≤ 800, URL ≤ 1 500', `${text.length - link.length} / ${link.length} / ${wa.length}`);
+  await context.close();
+
+  // Le lien reconstitue la carte dans un autre contexte (aucun stockage partagé).
+  const other = await newPage({ width: 1100 });
+  await other.page.goto(link, { waitUntil: 'networkidle0' });
+  await new Promise((r) => setTimeout(r, 600));
+  const rebuilt = await other.page.evaluate(() => ({
+    h1: document.querySelector('h1')?.textContent,
+    card: document.querySelector('.brief-page__card svg')?.textContent,
+    robots: document.querySelector('meta[name="robots"]')?.content,
+  }));
+  ok(rebuilt.h1 === 'Amani Uwase — Kivu Coffee' && rebuilt.card?.replace(/\s/g, '') === preview.replace(/\s/g, ''), 'Le lien reconstitue la carte à l’identique');
+  ok(rebuilt.robots === 'noindex, nofollow', '/brief : noindex, nofollow');
+  // Paramètres corrompus ou hostiles : page d'erreur propre, aucun HTML injecté.
+  const hostile = 'j' + Buffer.from('{"n":"<img src=x onerror=alert(1)>","c":"x","b":["hack"],"s":"x","e":"","g":""}').toString('base64url');
+  let clean = 0;
+  for (const q of ['', '?d=', '?d=zAAAA', '?d=%%%', `?d=${hostile}`, `?d=${link.split('d=')[1].slice(0, -10)}`, `?d=j${'A'.repeat(1600)}`]) {
+    await other.page.goto(base + 'brief/' + q, { waitUntil: 'networkidle0' });
+    await new Promise((r) => setTimeout(r, 200));
+    if (await other.page.evaluate(() => /illisible/.test(document.querySelector('h1')?.textContent || '') && !document.querySelector('main img'))) clean++;
+  }
+  ok(clean === 7, 'Liens corrompus : page d’erreur propre (7/7)', `${clean}/7`);
+  await other.context.close();
+
+  // Pire cas : champs remplis au maximum avec un texte peu compressible.
+  const { page: mp, context: mc } = await newPage({ width: 1440 });
+  await mp.goto(base, { waitUntil: 'networkidle0' });
+  const fill = (sel, v) => mp.$eval(sel, (el, v) => { Object.getOwnPropertyDescriptor(el.constructor.prototype, 'value').set.call(el, v); el.dispatchEvent(new Event('input', { bubbles: true })); }, v);
+  let seed = 11;
+  const rnd = (abc, n) => Array.from({ length: n }, (_, i) => (i % 8 === 7 ? ' ' : abc[(seed = (seed * 16807) % 2147483647) % abc.length])).join('');
+  let worst = 0;
+  for (const abc of ['éèàùçêôîœabcdefghijklmnopqrstuvwxyz', 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJ0123456789', '漢字仮名交じり文日本語中文한국어']) {
+    await fill('#brief-name', rnd(abc, 40));
+    await fill('#brief-company', rnd(abc, 60));
+    await fill('#brief-sentence', rnd(abc, 140));
+    await mp.evaluate(() => document.querySelectorAll('.choice').forEach((c) => c.getAttribute('aria-pressed') !== 'true' && !/sais pas encore/.test(c.textContent) && c.click()));
+    await new Promise((r) => setTimeout(r, 400));
+    worst = Math.max(worst, (await mp.evaluate(() => document.querySelector('.brief__send').href)).length);
+  }
+  ok(worst <= 1500, 'Aucune URL générée au-delà de 1 500 caractères (champs au maximum)', `pire cas ${worst}`);
+  await mc.close();
+}
+
 section('Fluidité du défilement (CPU ×4)');
 for (const width of [375, 1440]) {
   const { page, context } = await newPage({ width, height: width < 768 ? 740 : 900 });

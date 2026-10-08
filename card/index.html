@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Kouamé N’nahssé Jean-David — Adwini Studio</title>
+    <!-- Page hors parcours : jamais indexée, jamais suivie, liée depuis aucune autre page. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png?v=3" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3" />
+    <script>
+      // Avant le premier affichage : langue de la page, thème mémorisé, classe « js ».
+      (function () {
+        var h = document.documentElement, l = 'en';
+        if (!l) {
+          l = 'fr';
+          try {
+            var s = localStorage.getItem('adwini-lang');
+            if (s === 'fr' || s === 'en') l = s; else throw 0;
+          } catch (e) {
+            var p = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+            for (var i = 0; i < p.length; i++) {
+              var c = String(p[i] || '').slice(0, 2).toLowerCase();
+              if (c === 'fr' || c === 'en') { l = c; break; }
+            }
+          }
+        }
+        h.lang = l;
+        h.setAttribute('data-lang', l);
+        h.className += ' js app';
+        try {
+          var t = localStorage.getItem('adwini-theme');
+          if (t === 'light' || t === 'dark') h.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      html { background: #faf8f4; }
+      @media (prefers-color-scheme: dark) { html:not([data-theme='light']) { background: #0d0e10; } }
+      html[data-theme='dark'] { background: #0d0e10; }
+    </style>
+  </head>
+  <body data-page="founder">
+    <div id="root"></div>
+    <noscript><p style="padding: 24px; font-family: sans-serif">Adwini Studio — JavaScript requis / JavaScript required.</p></noscript>
+    <script type="module" src="/src/entry-page.tsx"></script>
+  </body>
+</html>

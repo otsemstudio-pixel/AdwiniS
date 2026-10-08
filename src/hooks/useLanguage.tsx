@@ -59,6 +59,8 @@ export function LanguageProvider({ children, initialLang }: ProviderProps) {
   // Le document suit la langue active : lang, titre, description, Open Graph.
   useEffect(() => {
     document.documentElement.lang = lang;
+    // Les pages autonomes (/carte, /card, /brief) gèrent elles-mêmes leur titre et restent hors index.
+    if (document.body.dataset.page) return;
     document.title = t.meta.title;
     setMeta('meta[name="description"]', t.meta.description);
     setMeta('meta[property="og:title"]', t.meta.title);

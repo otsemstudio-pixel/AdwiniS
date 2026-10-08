@@ -149,6 +149,74 @@ export interface Content {
     socials: string;
     whatsappMessage: string;
   };
+  /** Carte de brief : formulaire de la section contact, message WhatsApp, visuel. */
+  brief: {
+    fields: Record<'name' | 'company' | 'sentence', { label: string; placeholder: string }>;
+    needsLabel: string;
+    deadlineLabel: string;
+    budgetLabel: string;
+    needs: Record<'id' | 'ui' | 'st' | 'unk', string>;
+    deadlines: Record<'urgent' | 'month' | 'quarter' | 'none', string>;
+    budgets: Record<'lt600' | '600-1200' | '1200-2200' | 'gt2200' | 'oneoff' | 'unknown', string>;
+    /** « {n} / {max} caractères » */
+    counter: string;
+    required: string;
+    optional: string;
+    send: string;
+    copy: string;
+    download: string;
+    quickTitle: string;
+    quick: string;
+    privacy: string;
+    /** « Il manque : {fields}. » */
+    missing: string;
+    copied: string;
+    downloaded: string;
+    error: string;
+    previewLabel: string;
+    message: {
+      hello: string;
+      /** « Je suis {name}, de {company}. » */
+      intro: string;
+      needs: string;
+      sentence: string;
+      deadline: string;
+      budget: string;
+      link: string;
+      none: string;
+    };
+    card: {
+      label: string;
+      needs: string;
+      deadline: string;
+      budget: string;
+      mention: string;
+      placeholderName: string;
+      placeholderCompany: string;
+      placeholderSentence: string;
+    };
+  };
+  /** Page /brief : la carte reconstituée depuis le lien. */
+  briefPage: {
+    title: string;
+    intro: string;
+    errorTitle: string;
+    errorBody: string;
+    back: string;
+    download: string;
+  };
+  /** Pages /carte et /card : la carte du fondateur. */
+  founderPage: {
+    title: string;
+    heading: string;
+    intro: string;
+    role: string;
+    hd: string;
+    square: string;
+    squareLabel: string;
+    note: string;
+    back: string;
+  };
   footer: {
     label: string;
     navTitle: string;
