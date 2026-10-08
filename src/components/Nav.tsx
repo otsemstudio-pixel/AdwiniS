@@ -36,7 +36,6 @@ export function Nav() {
           </a>
         </nav>
         <div className="nav__mobile">
-          <ThemeToggle />
           <button
             ref={menuButton}
             type="button"

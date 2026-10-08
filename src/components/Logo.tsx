@@ -1,4 +1,4 @@
-import { mark, sparksMarker, wordmarkInline, wordmarkStacked } from '../data/brand';
+import { mark, sparksMarker, wordmark } from '../data/brand';
 
 interface MarkProps {
   size?: number;
@@ -10,13 +10,12 @@ interface MarkProps {
 }
 
 /**
- * Le symbole : une main en trait continu et trois éclats.
- * `pathLength="1"` normalise chaque tracé pour l'animation stroke-dashoffset,
- * quelle que soit sa longueur réelle.
+ * Le symbole Adwini : un trait continu et trois éclats.
+ * `pathLength="1"` normalise chaque tracé pour l'animation stroke-dashoffset.
  */
 export function LogoMark({ size = 40, label, intro, className = '' }: MarkProps) {
   // Sous 24 px, le trait est épaissi pour rester lisible.
-  const width = size < 24 ? mark.strokeWidth * 1.4 : mark.strokeWidth;
+  const width = size < 24 ? mark.strokeWidth * 1.3 : mark.strokeWidth;
   return (
     <svg
       viewBox={mark.viewBox}
@@ -30,7 +29,7 @@ export function LogoMark({ size = 40, label, intro, className = '' }: MarkProps)
       fill="none"
       stroke="currentColor"
       strokeWidth={width}
-      strokeLinecap="round"
+      strokeLinecap={mark.linecap}
       strokeLinejoin="round"
     >
       {mark.strokes.map((d) => (
@@ -43,7 +42,7 @@ export function LogoMark({ size = 40, label, intro, className = '' }: MarkProps)
   );
 }
 
-/** Marqueur d'accent : les trois éclats seuls, en terre cuite. À utiliser au plus quatre fois. */
+/** Marqueur d'accent : les trois éclats seuls, en violet. À utiliser au plus quatre fois. */
 export function Sparks({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -53,8 +52,8 @@ export function Sparks({ className = '' }: { className?: string }) {
       focusable="false"
       fill="none"
       stroke="currentColor"
-      strokeWidth={4}
-      strokeLinecap="round"
+      strokeWidth={mark.strokeWidth}
+      strokeLinecap={mark.linecap}
     >
       {sparksMarker.paths.map((d, i) => (
         <path key={d} d={d} pathLength={1} style={{ ['--i' as string]: i }} />
@@ -63,21 +62,18 @@ export function Sparks({ className = '' }: { className?: string }) {
   );
 }
 
-/** Wordmark en tracé figé (jamais recomposé en police web). */
-export function Wordmark({ stacked = false, height }: { stacked?: boolean; height: number }) {
-  const w = stacked ? wordmarkStacked : wordmarkInline;
+/**
+ * Wordmark « Adwini Studio » : tracé figé, jamais recomposé en police web.
+ * Servi une seule fois en fichier (public/brand/wordmark.svg) et coloré par un masque CSS
+ * en `currentColor` : le HTML n'embarque pas les 15 Ko du tracé à chaque emploi.
+ */
+export function Wordmark({ height }: { height: number }) {
   return (
-    <svg
-      viewBox={`0 0 ${w.width} ${w.height}`}
-      height={height}
-      width={(height * w.width) / w.height}
+    <span
       className="wordmark"
       aria-hidden="true"
-      focusable="false"
-      fill="currentColor"
-    >
-      <path d={w.d} />
-    </svg>
+      style={{ height, width: (height * wordmark.width) / wordmark.height }}
+    />
   );
 }
 
@@ -86,17 +82,17 @@ export function LockupHorizontal({ size = 36, intro }: { size?: number; intro?: 
   return (
     <span className="lockup lockup--h">
       <LogoMark size={size} intro={intro} />
-      <Wordmark height={size * 0.42} />
+      <Wordmark height={size * 0.36} />
     </span>
   );
 }
 
-/** Verrouillage vertical (formats carrés) : symbole au-dessus, nom centré. */
+/** Verrouillage vertical (formats carrés) : symbole au-dessus, nom centré dessous. */
 export function LockupVertical({ size = 96 }: { size?: number }) {
   return (
     <span className="lockup lockup--v">
       <LogoMark size={size} />
-      <Wordmark stacked height={size * 0.6} />
+      <Wordmark height={size * 0.3} />
     </span>
   );
 }

@@ -93,6 +93,11 @@
   color: #16181c;
 }
 
+.icon-btn--on-ink {
+  border-color: #f2efe9;
+  color: #f2efe9;
+}
+
 .btn--outline-light {
   border-color: #f2efe9;
   color: #f2efe9;
@@ -165,15 +170,20 @@ a:focus-visible > .link-draw::after {
   gap: 1rem;
 }
 
+/* Wordmark : fichier SVG externe (mis en cache) appliqué en masque, coloré par currentColor. */
 .wordmark {
-  width: auto;
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: url('/brand/wordmark.svg') no-repeat center / contain;
+  mask: url('/brand/wordmark.svg') no-repeat center / contain;
 }
 
-/* Les trois éclats, marqueur d'accent en terre cuite (quatre emplois sur la page). */
+/* Les trois éclats, marqueur d'accent en violet (quatre emplois sur la page). */
 .sparks {
   display: inline-block;
-  width: 0.34em;
-  height: 0.42em;
+  width: 0.5em;
+  height: 0.32em;
   color: var(--accent);
   overflow: visible;
 }
@@ -497,7 +507,8 @@ a:focus-visible > .link-draw::after {
 }
 
 .nav__brand .wordmark {
-  height: 13px;
+  height: 12px;
+  width: 99px;
 }
 
 @media (min-width: 400px) {
@@ -507,7 +518,8 @@ a:focus-visible > .link-draw::after {
   }
 
   .nav__brand .wordmark {
-    height: 15px;
+    height: 13px;
+    width: 108px;
   }
 }
 

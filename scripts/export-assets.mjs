@@ -39,7 +39,7 @@ function readBrand() {
     return [...block.matchAll(/'([^']+)'/g)].map((m) => m[1]);
   };
   const wm = readFileSync(resolve(root, 'src/data/brand.wordmark.ts'), 'utf8');
-  const inline = wm.match(/wordmarkInline = \{ width: (\d+), height: (\d+), d: '([^']+)'/);
+  const inline = wm.match(/wordmark = \{ width: (\d+), height: (\d+), d: '([^']+)'/);
   return {
     strokes: list('strokes'),
     sparks: list('sparks'),
@@ -48,7 +48,7 @@ function readBrand() {
   };
 }
 
-const C = { bg: '#FAF8F4', ink: '#16181C', accent: '#9A5B36', grey: '#5E5C55' };
+const C = { bg: '#FAF8F4', ink: '#16181C', accent: '#4B2A7B', grey: '#5E5C55' };
 
 const font = (pkg, file, family, weight) => {
   const data = readFileSync(resolve(root, 'node_modules/@fontsource', pkg, 'files', file)).toString('base64');
@@ -57,18 +57,18 @@ const font = (pkg, file, family, weight) => {
 
 async function main() {
   const brand = readBrand();
-  const mark = (x, y, size, { accent = C.accent, width = brand.strokeWidth } = {}) =>
-    `<g transform="translate(${x} ${y}) scale(${size / 100})" fill="none" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round">` +
-    brand.strokes.map((d) => `<path d="${d}" stroke="${C.ink}"/>`).join('') +
-    brand.sparks.map((d) => `<path d="${d}" stroke="${accent}"/>`).join('') +
+  // Le logo est monochrome : trait et éclats de la même couleur.
+  const mark = (x, y, size, { color = C.ink, width = brand.strokeWidth } = {}) =>
+    `<g transform="translate(${x} ${y}) scale(${size / 100})" fill="none" stroke-width="${width}" stroke-linecap="square" stroke-linejoin="round">` +
+    brand.strokes.concat(brand.sparks).map((d) => `<path d="${d}" stroke="${color}"/>`).join('') +
     `</g>`;
   const wordmark = (x, y, h) =>
-    `<g transform="translate(${x} ${y}) scale(${h / brand.wordmark.height})" fill="${C.ink}"><path d="${brand.wordmark.d}"/></g>`;
+    `<g transform="translate(${x} ${y}) scale(${h / brand.wordmark.height})" fill="${C.ink}" fill-rule="evenodd"><path d="${brand.wordmark.d}"/></g>`;
 
   const og = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
 <rect width="1200" height="630" fill="${C.bg}"/>
 ${mark(64, 52, 92)}
-${wordmark(170, 84, 30)}
+${wordmark(172, 86, 28)}
 <text x="1136" y="96" text-anchor="end" font-family="JetBrains Mono" font-size="15" letter-spacing="2.7" fill="${C.grey}">ADWINI / 001</text>
 <text x="64" y="402" font-family="Outfit" font-weight="600" font-size="104" letter-spacing="-4" fill="${C.ink}">DES IDÉES AFRICAINES.</text>
 <text x="64" y="496" font-family="Outfit" font-weight="600" font-size="104" letter-spacing="-4" fill="${C.ink}">VUES AUTREMENT.</text>
@@ -80,9 +80,9 @@ ${wordmark(170, 84, 30)}
   // Symbole seul, encre sur fond clair, avec une marge (zone de respect). Trait épaissi en petit.
   const icon = (size, pad) => {
     const s = size - pad * 2;
-    const width = size <= 32 ? brand.strokeWidth * 1.5 : brand.strokeWidth;
+    const width = size <= 32 ? brand.strokeWidth * 1.3 : brand.strokeWidth;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
-<rect width="${size}" height="${size}" rx="${size * 0.22}" fill="${C.bg}"/>${mark(pad, pad, s, { width, accent: size <= 32 ? C.ink : C.accent })}</svg>`;
+<rect width="${size}" height="${size}" rx="${size * 0.22}" fill="${C.bg}"/>${mark(pad, pad, s, { width })}</svg>`;
   };
 
   writeFileSync(pub('og-image.svg'), og);

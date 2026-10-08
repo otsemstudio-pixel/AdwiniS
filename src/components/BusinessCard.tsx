@@ -1,5 +1,5 @@
-import { forwardRef } from 'react';
-import { mark, wordmarkInline } from '../data/brand';
+import { forwardRef, useEffect, useState } from 'react';
+import { mark, wordmark } from '../data/brand';
 import type { CardData } from '../utils/card';
 import type { QrShape } from '../utils/qr';
 
@@ -19,8 +19,8 @@ const STROKE = 2.7; // ≈ 2 px à la taille d'affichage
 export const CARD_COLORS = {
   ivory: '#FAF8F4',
   ink: '#16181C',
-  accent: '#9A5B36',
-  accentLight: '#C98A5E',
+  accent: '#4B2A7B',
+  accentLight: '#A68FDB',
   soft: '#D9D4CA',
   muted: '#9B968C',
 };
@@ -40,20 +40,21 @@ function Frame({ fill, stroke }: { fill: string; stroke: string }) {
   );
 }
 
-function Mark({ x, y, size, color, accent }: { x: number; y: number; size: number; color: string; accent: string }) {
+/** Le logo est monochrome : trait et éclats de la même couleur. */
+function Mark({ x, y, size, color }: { x: number; y: number; size: number; color: string }) {
   return (
     <g
       transform={`translate(${x} ${y}) scale(${size / 100})`}
       fill="none"
       strokeWidth={mark.strokeWidth}
-      strokeLinecap="round"
+      strokeLinecap={mark.linecap}
       strokeLinejoin="round"
     >
       {mark.strokes.map((d) => (
         <path key={d} d={d} stroke={color} />
       ))}
       {mark.sparks.map((d) => (
-        <path key={d} d={d} stroke={accent} />
+        <path key={d} d={d} stroke={color} />
       ))}
     </g>
   );
@@ -65,14 +66,19 @@ interface FrontProps {
 }
 
 export const CardFront = forwardRef<SVGSVGElement, FrontProps>(function CardFront({ taglineLines, label }, ref) {
-  const wmH = 34;
+  const wmH = 30;
+  // Le tracé du wordmark (15 Ko) n'est inséré qu'après chargement : il reste hors du HTML prérendu.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   return (
     <svg ref={ref} viewBox={`0 0 ${CARD_W} ${CARD_H}`} className="bcard__svg" role="img" aria-label={label}>
       <Frame fill={C.ivory} stroke={C.ink} />
-      <Mark x={M - 8} y={M - 10} size={108} color={C.ink} accent={C.accent} />
-      <g transform={`translate(${M} ${M + 122}) scale(${wmH / wordmarkInline.height})`} fill={C.ink}>
-        <path d={wordmarkInline.d} />
-      </g>
+      <Mark x={M - 12} y={M - 12} size={112} color={C.ink} />
+      {mounted && (
+        <g transform={`translate(${M} ${M + 124}) scale(${wmH / wordmark.height})`} fill={C.ink} fillRule="evenodd">
+          <path d={wordmark.d} />
+        </g>
+      )}
       {taglineLines.map((line, i) => (
         <text key={i} x={M} y={CARD_H - M - 40 - (taglineLines.length - 1 - i) * 34} fontFamily={OUTFIT} fontWeight={600} fontSize={28} letterSpacing={-0.5} fill={C.ink}>
           {line}

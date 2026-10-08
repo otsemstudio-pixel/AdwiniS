@@ -44,10 +44,10 @@
 }
 
 .hero__sparks {
-  margin-left: 0.08em;
+  margin-left: 0.04em;
   vertical-align: top;
-  width: 0.3em;
-  height: 0.36em;
+  width: 0.42em;
+  height: 0.27em;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -321,8 +321,8 @@
 }
 
 .plan__sparks {
-  width: 18px;
-  height: 22px;
+  width: 26px;
+  height: 17px;
 }
 
 .plan__name {
@@ -658,7 +658,7 @@
   text-transform: uppercase;
 }
 
-/* Souris : la carte se soulève de 4 px, le contour passe en terre cuite, le code monte sous son masque.
+/* Souris : la carte se soulève de 4 px, le contour passe en violet, le code monte sous son masque.
    Écran tactile : le code reste visible en permanence. */
 @media (hover: hover) and (pointer: fine) {
   .work__reveal > span {

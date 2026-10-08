@@ -3,9 +3,9 @@
  * Les composants n'utilisent que les rôles (--bg, --text, --line…), redéfinis en sombre.
  *
  * Contrastes vérifiés (WCAG 2.1, scripts/check.mjs) :
- *   terre cuite #9A5B36 / fond #FAF8F4   : 5,05:1 → texte courant OK, aucune correction
+ *   violet #4B2A7B / fond #FAF8F4        : 10,33:1 → texte courant OK
  *   texte secondaire #5E5C55 / #FAF8F4   : 6,29:1
- *   terre cuite clair #C98A5E / #0D0E10  : 7,01:1
+ *   violet clair #A68FDB / #0D0E10       : 6,96:1
  *   texte secondaire sombre #9B968C / #0D0E10 : 6,98:1
  */
 
@@ -16,7 +16,7 @@
   --text: #16181c;
   --muted: #5e5c55;
   --line: #16181c;
-  --accent: #9a5b36;
+  --accent: #4b2a7b;
   --grid: rgb(22 24 28 / 0.08);
   --nav-scrolled: rgb(250 248 244 / 0.92);
   --placeholder: #ece8e0;
@@ -25,7 +25,7 @@
   --inv-bg: #16181c;
   --inv-text: #f2efe9;
   --inv-muted: #9b968c;
-  --inv-accent: #c98a5e;
+  --inv-accent: #a68fdb;
 
   /* Typographie */
   --font-display: 'Outfit', 'Segoe UI', system-ui, sans-serif;
@@ -59,14 +59,14 @@
     --text: #f2efe9;
     --muted: #9b968c;
     --line: #f2efe9;
-    --accent: #c98a5e;
+    --accent: #a68fdb;
     --grid: rgb(242 239 233 / 0.08);
     --nav-scrolled: rgb(13 14 16 / 0.92);
     --placeholder: #1f2226;
     --inv-bg: #f2efe9;
     --inv-text: #16181c;
     --inv-muted: #5e5c55;
-    --inv-accent: #9a5b36;
+    --inv-accent: #4b2a7b;
   }
 }
 
@@ -77,12 +77,12 @@
   --text: #f2efe9;
   --muted: #9b968c;
   --line: #f2efe9;
-  --accent: #c98a5e;
+  --accent: #a68fdb;
   --grid: rgb(242 239 233 / 0.08);
   --nav-scrolled: rgb(13 14 16 / 0.92);
   --placeholder: #1f2226;
   --inv-bg: #f2efe9;
   --inv-text: #16181c;
   --inv-muted: #5e5c55;
-  --inv-accent: #9a5b36;
+  --inv-accent: #4b2a7b;
 }

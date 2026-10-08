@@ -28,7 +28,7 @@ Tout le contenu se trouve dans `src/data/`.
 | Un prix fixe (« à partir de ») | `src/data/site.ts` → `fixedPricing` |
 | Le numéro WhatsApp, l'e-mail, les réseaux, l'URL du site | `src/data/site.ts` → `site` |
 | Les projets (concepts) | `content.*.ts` → `work.projects` |
-| Le logo (symbole et wordmark) | `src/data/brand.ts` et `src/data/brand.wordmark.ts` |
+| Le logo (symbole et wordmark) | `src/data/brand.ts`, `src/data/brand.wordmark.ts`, `public/brand/` |
 | La structure commune des deux langues | `src/data/types.ts` |
 
 **Les deux langues doivent garder la même structure.** Si une clé manque dans l'un des deux fichiers, `npm run build` échoue et indique laquelle. Les textes anglais sont rédigés comme des originaux : gardez cette règle.
@@ -44,21 +44,20 @@ Toute information manquante est un emplacement explicite entre crochets :
   - `[EMAIL]` ;
   - `[LIEN INSTAGRAM]`, `[LIEN LINKEDIN]`, `[LIEN BEHANCE]` ;
 - dans `index.html` : `[@COMPTE X]` ;
-- `[IMAGE PROJET 01]` à `03` : voir plus bas ;
-- **`[LOGO-MARK.SVG]`** : voir la section suivante.
+- `[IMAGE PROJET 01]` à `03` : voir plus bas.
 
-### Remplacer le logo provisoire — `[LOGO-MARK.SVG]`
+### Le logo
 
-Le symbole (une main en trait continu et trois éclats) et le wordmark sont **provisoires**. Pour brancher les fichiers officiels :
+Le symbole (un trait continu et trois éclats) et le wordmark « Adwini Studio » sont **les fichiers officiels**, vectorisés à partir des visuels fournis.
 
-1. **Symbole** : dans `src/data/brand.ts`, collez les attributs `d` des tracés.
-   - Le trait continu va dans `strokes`, les trois éclats dans `sparks`.
-   - Ajustez aussi `viewBox` et `strokeWidth`.
-   - Les tracés doivent être des **traits** (`stroke`), pas des aplats : le site les colore en `currentColor`, les dessine au chargement et réutilise les éclats comme marqueur d'accent.
-2. **Wordmark** : dans `src/data/brand.wordmark.ts`, remplacez les tracés `d` (version en ligne et version empilée) et leurs dimensions. Le wordmark reste un tracé figé, jamais du texte.
-3. Lancez `npm run assets` : l'image de partage, le favicon et les icônes sont régénérés à partir de ces tracés.
-
-`scripts/outline-wordmark.mjs` a servi à produire le wordmark provisoire. Il peut être supprimé ensuite, avec la dépendance `opentype.js`.
+- **Symbole** : `src/data/brand.ts`.
+  - C'est la ligne centrale du trait (`strokes`) et des trois éclats (`sparks`), en coordonnées 0–100.
+  - Le trait fait 6,45 unités d'épaisseur. Ses extrémités sont coupées net (`linecap: square`), comme sur le dessin d'origine.
+  - Le site le dessine au chargement, en partant de la spirale.
+- **Wordmark** : `src/data/brand.wordmark.ts`, ainsi que `public/brand/wordmark.svg`.
+  - Dans la navigation, il est servi en fichier unique et coloré en CSS : il n'alourdit pas le HTML.
+- **Fichiers prêts à l'emploi** dans `public/brand/` : `adwini-mark.svg` (encre) et `adwini-mark-white.svg` (blanc).
+- **Mise à jour** : après toute modification de ces tracés, lancez `npm run assets`. L'image de partage, le favicon et les icônes sont régénérés.
 
 ### Ajouter les vrais visuels des projets
 
@@ -104,7 +103,7 @@ Une fois le domaine acheté :
   Un seul `IntersectionObserver` (seuil 0,15, une fois par élément) gère l'ensemble. Le titre du hero se révèle en CSS pur, sans attendre le JavaScript.
 - **Tracé du logo** : 900 ms, puis les éclats, une fois par session (classe `intro` posée par le script de `index.html`).
 - **Grain** : texture `feTurbulence` d'environ 300 octets, en position fixe, opacité 0,025.
-- **Accent terre cuite** :
+- **Accent violet** :
   - les éclats, utilisés quatre fois : hero, formule mise en avant, engagement n° 5, pied de page ;
   - le contour de la formule mise en avant ;
   - le survol des cartes projet ;
@@ -127,7 +126,6 @@ src/
 scripts/
   prerender.mjs        injecte le HTML FR + EN prérendu dans dist/index.html
   export-assets.mjs    image de partage et icônes, à partir des tracés de la marque
-  outline-wordmark.mjs outil ponctuel du wordmark provisoire
   check.mjs            vérifications automatiques
 ```
 
@@ -135,7 +133,7 @@ L'ordre des 13 sections est défini dans `SECTIONS` de `src/App.tsx`. Il aliment
 
 ## Performance (mesurée)
 
-- **JS initial : 66,4 Ko compressés** (budget : 150 Ko). CSS : 7,3 Ko. QR code (4 Ko) et export PNG (1 Ko) sont chargés à la demande.
+- **JS initial : 70,3 Ko compressés** (budget : 150 Ko). CSS : 7,3 Ko. QR code (4 Ko) et export PNG (1 Ko) sont chargés à la demande.
 - **Contenu utile en ≈ 1,1 s** sur 3G simulée (1,6 Mb/s, 150 ms de latence, CPU ×4), médiane de 3 chargements à froid.
 - **Polices** : auto-hébergées, sous-ensemble latin, `font-display: swap`.
   - Seule la police de titre (Outfit 600) est préchargée : mesuré, aucun retard du premier affichage.
@@ -145,7 +143,8 @@ L'ordre des 13 sections est défini dans `SECTIONS` de `src/App.tsx`. Il aliment
 
 | Couleurs | Ratio |
 |---|---|
-| Terre cuite `#9A5B36` sur `#FAF8F4` | 5,05:1, aucune correction nécessaire |
+| Violet `#4B2A7B` sur `#FAF8F4` | 10,33:1 |
+| Violet clair `#A68FDB` sur `#0D0E10` (mode sombre) | 6,96:1 |
 | Texte secondaire `#5E5C55` sur `#FAF8F4` | 6,29:1 |
 | Texte secondaire sombre `#9B968C` sur `#0D0E10` | 6,98:1 |
 

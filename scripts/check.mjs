@@ -65,8 +65,8 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 const pairs = [
-  ['Terre cuite / fond clair', '#9A5B36', '#FAF8F4', 4.5],
-  ['Terre cuite / blanc (cartes)', '#9A5B36', '#FFFFFF', 4.5],
+  ['Violet / fond clair', '#4B2A7B', '#FAF8F4', 4.5],
+  ['Violet / blanc (cartes)', '#4B2A7B', '#FFFFFF', 4.5],
   ['Texte / fond clair', '#16181C', '#FAF8F4', 4.5],
   ['Secondaire / fond clair', '#5E5C55', '#FAF8F4', 4.5],
   ['Secondaire / blanc (cartes)', '#5E5C55', '#FFFFFF', 4.5],
@@ -75,8 +75,8 @@ const pairs = [
   ['Secondaire sombre / fond sombre', '#9B968C', '#0D0E10', 4.5],
   ['Secondaire sombre / cartes sombres', '#9B968C', '#16181C', 4.5],
   ['Secondaire sombre / emplacements image', '#9B968C', '#1F2226', 4.5],
-  ['Terre cuite clair / fond sombre', '#C98A5E', '#0D0E10', 4.5],
-  ['Terre cuite clair / encre (section Technologie)', '#C98A5E', '#16181C', 4.5],
+  ['Violet clair / fond sombre', '#A68FDB', '#0D0E10', 4.5],
+  ['Violet clair / encre (section Technologie)', '#A68FDB', '#16181C', 4.5],
   ['Secondaire / ivoire (section inversée, sombre)', '#5E5C55', '#F2EFE9', 4.5],
 ];
 for (const [label, fg, bg, min] of pairs) {

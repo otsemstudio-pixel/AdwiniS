@@ -2,6 +2,7 @@ import { useEffect, useRef, type MouseEvent, type RefObject } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { prefersReducedMotion } from '../utils/motion';
 import { LanguageSwitch } from './LanguageSwitch';
+import { ThemeToggle } from './ThemeToggle';
 import { LogoMark } from './Logo';
 import { navLinks } from './navLinks';
 
@@ -98,6 +99,7 @@ export function MobileMenu({ open, onClose, returnFocus }: MobileMenuProps) {
           {t.nav.cta}
         </a>
         <LanguageSwitch className="lang-switch--on-ink" />
+        <ThemeToggle className="icon-btn--on-ink" />
         <p className="meta">KIGALI — RWANDA</p>
       </div>
     </dialog>
