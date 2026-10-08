@@ -86,7 +86,7 @@ ${wordmark(172, 86, 28)}
   };
 
   writeFileSync(pub('og-image.svg'), og);
-  writeFileSync(pub('favicon.svg'), icon(64, 4));
+  writeFileSync(pub('favicon.svg'), icon(64, 1));
 
   const fonts = [
     font('outfit', 'outfit-latin-600-normal.woff2', 'Outfit', 600),
@@ -103,7 +103,7 @@ ${wordmark(172, 86, 28)}
     console.log('✓', `public/${file}`);
   };
   await render(og, 1200, 630, 'og-image.png');
-  await render(icon(32, 2), 32, 32, 'favicon-32.png');
+  await render(icon(32, 0.5), 32, 32, 'favicon-32.png');
   await render(icon(180, 26), 180, 180, 'apple-touch-icon.png');
   await render(icon(192, 28), 192, 192, 'icon-192.png');
   await render(icon(512, 76), 512, 512, 'icon-512.png');
