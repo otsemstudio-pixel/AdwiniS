@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { spawn } from 'node:child_process';
 import { findChrome } from './export-assets.mjs';
+import { auditAlignment } from './align.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = resolve(root, '.check');
@@ -184,6 +185,22 @@ for (const width of [320, 375, 768, 1440, 1920]) {
   await page.screenshot({ path: resolve(out, `page-${width}.png`), fullPage: true });
   await page.screenshot({ path: resolve(out, `hero-${width}.png`) });
   await context.close();
+}
+
+section('Alignement des cartes (contenu jamais collé au contour, cartes sœurs alignées)');
+for (const [width, zoom, lang] of [[320, 1, 'fr-FR'], [360, 1, 'en-US'], [375, 1, 'fr-FR'], [412, 1, 'en-US'], [768, 1, 'fr-FR'], [1024, 1, 'en-US'], [1440, 1, 'fr-FR'], [320, 1.25, 'en-US'], [412, 1.25, 'fr-FR']]) {
+  for (const path of ['', 'carte/']) {
+    const { page, context } = await newPage({ width, height: width < 768 ? 800 : 900, lang });
+    // Texte agrandi : réglage « taille de police » des téléphones Android.
+    if (zoom !== 1) await page.evaluateOnNewDocument((z) => document.addEventListener('DOMContentLoaded', () => (document.documentElement.style.fontSize = `${z * 100}%`)), zoom);
+    await page.goto(base + path, { waitUntil: 'networkidle0' });
+    await page.addStyleTag({ content: '*{animation:none!important;transition:none!important} .reveal{opacity:1!important;transform:none!important}' });
+    const issues = await page.evaluate(auditAlignment);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    if (overflow > 0) issues.push(`débordement horizontal de ${overflow} px`);
+    ok(issues.length === 0, `${path || 'accueil'} ${width} px ${lang.slice(0, 2)}${zoom !== 1 ? ' texte 125 %' : ''}`, issues.slice(0, 3).join(' ; '));
+    await context.close();
+  }
 }
 
 /* 4. Structure ---------------------------------------------------------- */

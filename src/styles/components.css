@@ -668,7 +668,7 @@ a:focus-visible > .link-draw::after {
 }
 
 .section__title {
-  font-size: var(--fs-title);
+  font-size: min(var(--fs-title), 11vw);
   text-transform: uppercase;
   max-width: 16ch;
 }
