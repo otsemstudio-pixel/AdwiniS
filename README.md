@@ -2,9 +2,11 @@
 
 Site vitrine bilingue (FR / EN) d'Adwini Studio, Kigali. React + Vite + TypeScript, **100 % statique** : aucun backend, aucune base de données. Le HTML est prérendu au build, donc le contenu s'affiche avant le chargement du JavaScript.
 
+**En ligne :** https://otsemstudio-pixel.github.io/AdwiniS/ — publié automatiquement par GitHub Actions (`.github/workflows/deploy.yml`) à chaque push sur `main`.
+
 ```bash
 npm install
-npm run dev       # développement sur http://localhost:5173
+npm run dev       # développement sur http://localhost:5173/AdwiniS/
 npm run build     # build de production → dist/ (à déployer tel quel)
 npm run check     # vérifications avant livraison (après un build)
 npm run assets    # régénère l'image de partage et les icônes PNG
@@ -41,8 +43,17 @@ grep -rn "\[" src/data/site.ts index.html
 
 - `[NUMÉRO WHATSAPP]` : chiffres uniquement, format international sans « + » (ex. `250788123456`)
 - `[EMAIL]`, `[LIEN INSTAGRAM]`, `[LIEN LINKEDIN]`, `[LIEN BEHANCE]`
-- `[URL DU SITE]` : dans `site.ts` (QR code par défaut) et dans `index.html` (URL canonique, Open Graph)
 - `[@COMPTE X]` : dans `index.html`
+
+### Passer à un domaine personnalisé
+
+Une fois le domaine acheté :
+1. dans `vite.config.ts`, remettre `base: '/'` ;
+2. créer `public/CNAME` contenant le domaine (ex. `www.adwinistudio.com`) ;
+3. remplacer `https://otsemstudio-pixel.github.io/AdwiniS/` dans `index.html` et `src/data/site.ts` ;
+4. dans `scripts/check.mjs`, remettre `const base = 'http://localhost:4173/'` ;
+5. chez le registraire, créer un enregistrement CNAME : `www` → `otsemstudio-pixel.github.io` ;
+6. dans Settings → Pages, saisir le domaine, puis cocher « Enforce HTTPS ».
 
 ### Ajouter les vrais visuels des projets
 

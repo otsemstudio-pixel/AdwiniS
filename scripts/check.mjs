@@ -38,7 +38,7 @@ const section = (title) => console.log(`\n— ${title}`);
 /* 1. Bundle ------------------------------------------------------------- */
 section('Poids du bundle');
 const html = readFileSync(resolve(root, 'dist/index.html'), 'utf8');
-const initial = [...html.matchAll(/(?:src|href)="\/(assets\/[^"]+\.(?:js|css))"/g)].map((m) => m[1]);
+const initial = [...html.matchAll(/(?:src|href)="\/(?:AdwiniS\/)?(assets\/[^"]+\.(?:js|css))"/g)].map((m) => m[1]);
 let jsGz = 0;
 let cssGz = 0;
 for (const file of initial) {
@@ -89,7 +89,7 @@ const server = spawn(process.execPath, [resolve(root, 'node_modules/vite/bin/vit
   cwd: root,
   stdio: 'ignore',
 });
-const base = 'http://localhost:4173/';
+const base = 'http://localhost:4173/AdwiniS/';
 for (let i = 0; i < 50; i++) {
   try {
     await fetch(base);
