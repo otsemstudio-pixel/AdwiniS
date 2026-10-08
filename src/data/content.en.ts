@@ -288,6 +288,10 @@ const en: Content = {
     langTitle: 'Language & display',
     thanksCaption: 'thank you, in an Ivorian language',
   },
+  marquee: {
+    primary: ['Identity', 'Interfaces', 'Stories', 'Kigali', 'EN / FR'],
+    secondary: ['Mobile money', 'English and French', 'You own the source files', 'On-time guarantee', 'African icons'],
+  },
   tagline: 'Adwini Studio builds the visual codes of the next generation of African companies.',
 };
 

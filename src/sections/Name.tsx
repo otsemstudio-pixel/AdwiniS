@@ -9,8 +9,11 @@ export function Name({ index }: { index: number }) {
   return (
     <Section id="nom" index={index} label={n.label} title={n.title} hideTitle className="name">
       <div className="name__page">
-        <LogoMark size={480} className="name__watermark" />
-        <blockquote className="name__story" data-reveal="">
+        {/* Parallaxe mesurée : le filigrane dérive plus lentement que le texte (jamais le texte). */}
+        <div className="name__watermark parallax" aria-hidden="true">
+          <LogoMark size={480} />
+        </div>
+        <blockquote className="name__story reveal">
           <p>{n.story}</p>
         </blockquote>
         <p className="meta name__origin">{n.origin}</p>

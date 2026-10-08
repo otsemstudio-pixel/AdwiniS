@@ -8,12 +8,12 @@ export function Network({ index }: { index: number }) {
   const n = t.network;
   return (
     <Section id="reseau" index={index} label={n.label} title={n.title} className="network">
-      <div className="network__text" data-reveal="">
+      <div className="network__text reveal">
         {n.body.map((para) => (
           <p key={para}>{para}</p>
         ))}
       </div>
-      <div className="network__diagram">
+      <div className="network__diagram reveal">
         <div className="card network__core">
           <LogoMark size={44} />
           <h3 className="network__heading">{n.coreTitle}</h3>
@@ -33,7 +33,7 @@ export function Network({ index }: { index: number }) {
           </ul>
         </div>
       </div>
-      <div className="network__promise" data-reveal="">
+      <div className="network__promise reveal">
         <p>{n.promise}</p>
       </div>
     </Section>

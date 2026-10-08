@@ -39,7 +39,8 @@ export function MobileMenu({ open, onClose, returnFocus }: MobileMenuProps) {
         returnFocus.current?.focus();
       };
       if (prefersReducedMotion()) finish();
-      else window.setTimeout(finish, 320);
+      // Les liens sortent dans l'ordre inverse, puis le volet redescend : 850 ms en tout.
+      else window.setTimeout(finish, 850);
     }
   }, [open, returnFocus]);
 
@@ -76,14 +77,16 @@ export function MobileMenu({ open, onClose, returnFocus }: MobileMenuProps) {
         <span className="menu__logo">
           <LogoMark size={36} />
         </span>
-        <button type="button" className="btn btn--outline-light btn--small" onClick={onClose}>
-          {t.nav.close}
+        {/* Même icône que le bouton d'ouverture, à la même place : ses deux traits pivotent en croix. */}
+        <button type="button" className="burger burger--close" onClick={onClose} aria-label={t.nav.close}>
+          <span className="burger__line" />
+          <span className="burger__line" />
         </button>
       </div>
       <nav aria-label={t.nav.primaryLabel}>
         <ul className="menu__links">
-          {navLinks(t).map((link, i) => (
-            <li key={link.href}>
+          {navLinks(t).map((link, i, all) => (
+            <li key={link.href} className="menu__mask" style={{ ['--i' as string]: i, ['--ri' as string]: all.length - 1 - i }}>
               <a href={link.href} className="menu__link" onClick={followLink}>
                 <span className="menu__num" aria-hidden="true">
                   0{i + 1}

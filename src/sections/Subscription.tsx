@@ -1,3 +1,4 @@
+import { CountUp } from '../components/CountUp';
 import { Sparks } from '../components/Logo';
 import { Section } from '../components/Section';
 import { pricing } from '../data/site';
@@ -11,11 +12,17 @@ export function Subscription({ index }: { index: number }) {
   return (
     <Section id="abonnement" index={index} label={s.label} title={s.title} aside={<p className="lead">{s.intro}</p>} className="subscription">
       <ul className="plans">
-        {s.plans.map((plan) => {
+        {s.plans.map((plan, i) => {
           const data = pricing[plan.id];
           const headingId = `plan-${plan.id}`;
           return (
-            <li key={plan.id} className={`card plan ${data.featured ? 'plan--featured' : ''}`} aria-labelledby={headingId}>
+            <li
+              key={plan.id}
+              className={`card plan ${data.featured ? 'plan--featured' : ''}`}
+              aria-labelledby={headingId}
+              style={{ ['--i' as string]: i }}
+            >
+              <div className="plan__main">
               <div className="plan__top">
                 <p className="code">{data.code}</p>
                 {plan.featuredNote && (
@@ -29,12 +36,16 @@ export function Subscription({ index }: { index: number }) {
                 {plan.name}
               </h3>
               <p className="plan__audience">{plan.audience}</p>
+              </div>
+              <div className="plan__side">
               <p className="plan__price">
                 {data.price === null ? (
                   <span className="plan__amount plan__amount--quote">{plan.priceNote}</span>
                 ) : (
                   <>
-                    <span className="plan__amount">{formatUSD(data.price, lang)}</span>
+                    <span className="plan__amount">
+                      <CountUp value={data.price} format={(n) => formatUSD(n, lang)} />
+                    </span>
                     <span className="plan__per">{s.perMonth}</span>
                   </>
                 )}
@@ -47,7 +58,7 @@ export function Subscription({ index }: { index: number }) {
                 <div>
                   <dt>{s.turnaround}</dt>
                   <dd>
-                    {data.turnaroundHours} {s.hours}
+                    <CountUp value={data.turnaroundHours} format={(n) => `${n} ${s.hours}`} />
                   </dd>
                 </div>
               </dl>
@@ -55,6 +66,7 @@ export function Subscription({ index }: { index: number }) {
                 {s.cta}
                 <span className="visually-hidden"> — {plan.name}</span>
               </a>
+              </div>
             </li>
           );
         })}

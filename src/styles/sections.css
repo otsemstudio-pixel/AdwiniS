@@ -387,6 +387,16 @@
   font-family: var(--font-mono);
 }
 
+.plan__main,
+.plan__side {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan__side {
+  flex: 1;
+}
+
 .plan__cta {
   margin-top: auto;
 }
@@ -572,12 +582,13 @@
   height: 100%;
   overflow: hidden;
   transition:
-    transform 0.4s var(--ease-out),
-    border-color 0.3s var(--ease-out);
+    transform 0.35s var(--ease-ui),
+    border-color 0.35s var(--ease-ui);
 }
 
 .work__image {
   aspect-ratio: 4 / 3;
+  transition: transform 0.35s var(--ease-ui);
 }
 
 .work__body {
@@ -668,8 +679,13 @@
 
   .work__card:hover,
   .work__card:focus-within {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     border-color: var(--accent);
+  }
+
+  .work__card:hover .work__image,
+  .work__card:focus-within .work__image {
+    transform: scale(1.04);
   }
 
   .work__card:hover .work__reveal > span,
@@ -981,13 +997,16 @@
 
 .name__watermark {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(80vw, 520px);
-  height: auto;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  display: grid;
+  place-items: center;
   opacity: 0.07;
   pointer-events: none;
+}
+
+.name__watermark svg {
+  width: min(80vw, 520px);
+  height: auto;
 }
 
 .name__story {
@@ -1219,11 +1238,6 @@
   border-radius: var(--radius);
   background: var(--text);
   color: var(--bg);
-  transition: transform 0.4s var(--ease-out);
-}
-
-.contact__whatsapp:hover {
-  transform: translateY(-4px);
 }
 
 .contact__whatsapp:focus-visible {
@@ -1250,6 +1264,12 @@
 
 .contact__arrow {
   justify-self: end;
+  transition: transform 0.32s var(--ease-ui);
+}
+
+.contact__whatsapp:hover .contact__arrow,
+.contact__whatsapp:focus-visible .contact__arrow {
+  transform: translateX(4px);
 }
 
 .contact__secondary {
@@ -1407,5 +1427,101 @@
 
   .footer__cols {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTIONS COLLANTES — deux seulement, bureau uniquement (≥ 1024 px).
+   Sur mobile et tablette, tout s'empile normalement.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Les trois pôles : le titre reste collé, les cartes défilent à côté et grandissent
+   légèrement à leur passage (scale 0,96 → 1 → 0,96, piloté par le défilement). */
+@keyframes pole-pass {
+  0% {
+    transform: scale(0.96);
+  }
+  35%,
+  65% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.96);
+  }
+}
+
+@media (min-width: 1024px) {
+  .poles .wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: clamp(3rem, 6vw, 7rem);
+    align-items: start;
+  }
+
+  .poles .section__head {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+    display: block;
+    margin-bottom: 0;
+  }
+
+  .poles .section__aside {
+    padding-left: 0;
+  }
+
+  .poles .poles__list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .poles .pole:nth-child(n) {
+    grid-column: auto;
+    margin-top: 0;
+    padding: clamp(2rem, 3vw, 3rem);
+  }
+
+  .poles .pole {
+    animation: pole-pass linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+/* Les formules : les cartes se superposent en pile, chacune collée 2 rem plus bas
+   que la précédente, et recouvre partiellement celle d'avant. */
+@media (min-width: 1024px) {
+  .subscription .plans {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    max-width: 1040px;
+    margin-inline: auto;
+  }
+
+  .subscription .plan:nth-child(n) {
+    grid-column: auto;
+    margin: 0;
+  }
+
+  .subscription .plan {
+    position: sticky;
+    top: calc(var(--nav-h) + 1.5rem + var(--i) * 2rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 3rem;
+    min-height: 360px;
+  }
+
+  .subscription .plan--featured {
+    padding-top: clamp(1.75rem, 3vw, 2.75rem);
+  }
+
+  .subscription .plan__price {
+    margin-top: 0;
+  }
+
+  .subscription .terms {
+    margin-top: 8rem;
   }
 }

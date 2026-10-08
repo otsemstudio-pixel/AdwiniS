@@ -52,6 +52,23 @@ const lazy = readdirSync(resolve(root, 'dist/assets'))
 ok(jsGz < 150 * 1024, 'JS initial < 150 Ko compressé', `${(jsGz / 1024).toFixed(1)} Ko`);
 console.log(`  CSS initial : ${(cssGz / 1024).toFixed(1)} Ko — chargés à la demande : ${lazy.join(', ')}`);
 
+section('Mouvement : garde-fous');
+{
+  const css = initial.filter((f) => f.endsWith('.css')).map((f) => readFileSync(resolve(root, 'dist', f), 'utf8')).join('');
+  ok(/@supports not \(animation-timeline:\s?view\(\)\)/.test(css), 'Repli @supports not (animation-timeline: view()) présent');
+  // Seuls transform et opacity sont animés : aucune transition ni image-clé sur une propriété de mise en page.
+  const layoutProps = /\b(width|height|top|left|right|bottom|margin|padding|box-shadow|filter|background-position|letter-spacing|clip-path)\b/;
+  let m = null;
+  for (const t of css.matchAll(/transition(?:-property)?:([^;{}]+)/g)) if (layoutProps.test(t[1])) m = m || t[0];
+  for (const k of css.matchAll(/@keyframes[^{]+\{((?:[^{}]*\{[^{}]*\})*)\}/g)) {
+    for (const decl of k[1].matchAll(/([a-z-]+)\s*:/g)) if (layoutProps.test(decl[1])) m = m || k[0];
+  }
+  ok(!m, 'Aucune animation de propriété de mise en page', m ? m.slice(0, 90) : '');
+  ok(/1\s?200\s?\$|\$1,200/.test(html) && /2\s?200\s?\$/.test(html) && />48 h</.test(html), 'Prix et délais présents dans le HTML prérendu');
+  const before = Number(process.env.JS_BEFORE_KB || 70.3);
+  ok(jsGz / 1024 - before <= 10, 'JavaScript : moins de 10 Ko ajoutés', `+${(jsGz / 1024 - before).toFixed(1)} Ko (avant ${before} Ko)`);
+}
+
 /* 2. Contrastes --------------------------------------------------------- */
 section('Contrastes');
 const lum = (hex) => {
@@ -142,7 +159,8 @@ for (const width of [320, 375, 768, 1440, 1920]) {
     const vw = document.documentElement.clientWidth;
     const offenders = [...document.querySelectorAll('body *')]
       .filter((el) => {
-        if (el.closest('dialog:not([open])') || el.closest('.corner-meta')) return false;
+        // Les bandeaux défilants dépassent volontairement, rognés par leur rangée.
+        if (el.closest('dialog:not([open])') || el.closest('.corner-meta') || el.closest('.marquee__row')) return false;
         const r = el.getBoundingClientRect();
         return r.width > 0 && (r.right > vw + 1 || r.left < -1);
       })
@@ -258,6 +276,9 @@ section('Structure et accessibilité');
   /* 8. Langue ----------------------------------------------------------- */
   section('Langue');
   ok(s.lang === 'fr', 'Navigateur français → site en français');
+  // La barre se retire quand on descend : on remonte en haut avant de l'utiliser.
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await new Promise((r) => setTimeout(r, 600));
   await page.click('.nav__desktop .lang-switch__btn[lang="en"]');
   const en = await page.evaluate(() => ({
     lang: document.documentElement.lang,
@@ -298,7 +319,7 @@ section('Menu mobile');
   ok(m.open && m.expanded === 'true' && m.inMenu, 'Ouverture, aria-expanded, focus dans le menu');
   await page.screenshot({ path: resolve(out, 'menu-375.png') });
   await page.keyboard.press('Escape');
-  await new Promise((r) => setTimeout(r, 450));
+  await new Promise((r) => setTimeout(r, 1100));
   const c = await page.evaluate(() => ({
     open: document.querySelector('#mobile-menu').open,
     focus: document.activeElement.className,
@@ -325,14 +346,16 @@ section('prefers-reduced-motion');
   const r = await page.evaluate(() => {
     // Aucun mot sous masque, aucun bloc rogné, aucun volet : tout est visible sans défiler.
     const hidden = [...document.querySelectorAll('.split--scroll .w__i')].filter((el) => getComputedStyle(el).transform !== 'none').length +
-      [...document.querySelectorAll('[data-reveal]:not(.split):not(.wipe):not(.line-art) > *')].filter((el) => !['none', 'inset(0px)'].includes(getComputedStyle(el).clipPath)).length;
+      [...document.querySelectorAll('.reveal')].filter((el) => getComputedStyle(el).opacity !== '1' || getComputedStyle(el).transform !== 'none').length;
+    const moving = [...document.querySelectorAll('.marquee__track, .parallax, .poles .pole, .reveal')].filter((el) => getComputedStyle(el).animationName !== 'none').length;
     const anim = getComputedStyle(document.querySelector('.split--load .w__i')).animationName;
     const smooth = getComputedStyle(document.documentElement).scrollBehavior;
-    return { hidden, anim, smooth };
+    return { hidden, anim, smooth, moving };
   });
   ok(r.hidden === 0, 'Tous les textes visibles sans défilement ni animation', String(r.hidden));
   ok(r.anim === 'none', 'Titre du hero sans animation');
   ok(r.smooth === 'auto', 'Pas de défilement animé');
+  ok(r.moving === 0, 'Bandeaux, parallaxe, cartes : aucune animation', String(r.moving));
   await context.close();
 }
 
@@ -419,6 +442,37 @@ section('Carte de visite');
 }
 
 /* 12. 3G ---------------------------------------------------------------- */
+section('Fluidité du défilement (CPU ×4)');
+for (const width of [375, 1440]) {
+  const { page, context } = await newPage({ width, height: width < 768 ? 740 : 900 });
+  await page.goto(base, { waitUntil: 'networkidle0' });
+  await new Promise((r) => setTimeout(r, 1500));
+  const cdp = await page.createCDPSession();
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+  const fps = await page.evaluate(async () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const frames = [];
+    let last = performance.now();
+    await new Promise((done) => {
+      const step = (now) => {
+        frames.push(now - last);
+        last = now;
+        window.scrollBy(0, 24);
+        if (scrollY >= max - 2) done();
+        else requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+    const sorted = frames.slice(5).sort((a, b) => a - b);
+    const mean = sorted.reduce((s, v) => s + v, 0) / sorted.length;
+    const p95 = sorted[Math.floor(sorted.length * 0.95)];
+    return { mean: 1000 / mean, p95: 1000 / p95, frames: sorted.length };
+  });
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  ok(fps.mean >= 50, `${width} px : défilement ≥ 50 images/s en moyenne`, `moyenne ${fps.mean.toFixed(0)} i/s, 95e centile ${fps.p95.toFixed(0)} i/s, ${fps.frames} images`);
+  await context.close();
+}
+
 section('3G simulée (1,6 Mb/s, 150 ms RTT, CPU ×4) — médiane de 3 chargements à froid');
 {
   const runs = [];

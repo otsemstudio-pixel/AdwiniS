@@ -156,5 +156,7 @@ export interface Content {
     langTitle: string;
     thanksCaption: string;
   };
+  /** Bandeaux défilants : deux séquences, la seconde défile en sens inverse. */
+  marquee: { primary: string[]; secondary: string[] };
   tagline: string;
 }

@@ -54,9 +54,26 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-align: center;
-  transition:
-    background-color 0.3s var(--ease-out),
-    color 0.3s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.32s var(--ease-ui);
+}
+
+/* Survol : un fond monte depuis le bas (transform), le texte change de couleur en même temps. */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  background: var(--text);
+  transform: translateY(101%);
+  transition: transform 0.32s var(--ease-ui);
+}
+
+.btn:hover::before,
+.btn:focus-visible::before {
+  transform: none;
 }
 
 @media (max-width: 420px) {
@@ -77,14 +94,27 @@
   color: var(--bg);
 }
 
-.btn--solid:hover {
-  background: transparent;
+.btn--solid::before {
+  background: var(--bg);
+}
+
+.btn--solid:hover,
+.btn--solid:focus-visible {
   color: var(--text);
 }
 
-.btn--outline:hover {
-  background: var(--text);
+.btn--outline:hover,
+.btn--outline:focus-visible {
   color: var(--bg);
+}
+
+.btn--light::before {
+  background: #16181c;
+}
+
+.btn--light:hover,
+.btn--light:focus-visible {
+  color: #f2efe9;
 }
 
 .btn--light {
@@ -137,8 +167,9 @@
   border-radius: var(--stroke);
   background: currentColor;
   transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s var(--ease-out);
+  /* Au départ du curseur, le trait se replie vers la droite : l'asymétrie fait le détail. */
+  transform-origin: right;
+  transition: transform 0.32s var(--ease-ui);
 }
 
 .link-draw:hover::after,
@@ -146,6 +177,7 @@
 a:hover > .link-draw::after,
 a:focus-visible > .link-draw::after {
   transform: scaleX(1);
+  transform-origin: left;
 }
 
 /* ═══ Marque ═══ */
@@ -273,30 +305,18 @@ a:focus-visible > .link-draw::after {
   /* Titre du hero : joué au premier affichage, sans attendre JavaScript. */
   .js .split--load .w__i {
     animation: rise 0.7s var(--ease-out) both;
-    animation-delay: calc(0.15s + var(--i) * 40ms);
+    animation-delay: calc(0.15s + min(var(--i) * 35ms, 400ms));
   }
 
   /* Le reste : révélé à l'entrée dans l'écran (seuil 0,15, une seule fois). */
   .js:not(.no-reveal) .split--scroll .w__i {
     transform: translateY(110%);
     transition: transform 0.7s var(--ease-out);
-    transition-delay: calc(var(--i) * 40ms);
+    transition-delay: min(calc(var(--i) * 35ms), 400ms);
   }
 
   .js .split--scroll.is-in .w__i {
     transform: none;
-  }
-
-  /* Blocs de texte : le masque s'ouvre de haut en bas. Il s'applique aux enfants :
-     un élément entièrement masqué n'aurait aucune surface visible et
-     IntersectionObserver ne le verrait jamais entrer dans l'écran. */
-  .js:not(.no-reveal) [data-reveal]:not(.split):not(.wipe):not(.line-art) > * {
-    clip-path: inset(0 0 100% 0);
-    transition: clip-path 0.9s var(--ease-out);
-  }
-
-  .js [data-reveal].is-in:not(.split):not(.wipe):not(.line-art) > * {
-    clip-path: inset(0 0 0 0);
   }
 
   /* Images et blocs visuels : un volet encre balaie de bas en haut et découvre le contenu. */
@@ -487,11 +507,6 @@ a:focus-visible > .link-draw::after {
   gap: 12px;
   height: var(--nav-h);
   padding-inline: var(--margin);
-  transition: background-color 0.3s var(--ease-out);
-}
-
-.nav--scrolled .nav__bar {
-  background: var(--nav-scrolled);
 }
 
 .nav__brand {
@@ -527,11 +542,6 @@ a:focus-visible > .link-draw::after {
   display: none;
 }
 
-.nav__mobile {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 @media (min-width: 1100px) {
   .nav__desktop {
@@ -554,9 +564,6 @@ a:focus-visible > .link-draw::after {
     text-transform: uppercase;
   }
 
-  .nav__mobile {
-    display: none;
-  }
 }
 
 /* ═══ Menu mobile plein écran ═══ */
@@ -830,4 +837,409 @@ a:focus-visible > .link-draw::after {
   .panel__block:nth-child(even) {
     margin-top: 6rem;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOUVEMENT — animations pilotées par le défilement (CSS pur), bandeaux,
+   navigation, menu. Seuls transform et opacity sont animés (compositeur),
+   à l'exception du tracé des traits SVG (stroke-dashoffset), propre au logo.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(2.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Le mouvement de base : blocs, cartes, séparateurs. */
+.reveal {
+  animation: reveal-up linear both;
+  animation-timeline: view();
+  animation-range: entry 10% cover 35%;
+}
+
+/* Repli obligatoire : sans support des animations pilotées par le défilement,
+   tout est visible immédiatement. */
+@supports not (animation-timeline: view()) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .parallax,
+  .poles .pole,
+  .thread__line,
+  .progress {
+    animation: none;
+  }
+
+  .progress {
+    display: none;
+  }
+}
+
+/* Barre de progression de lecture : 2 px en haut de l'écran. */
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: var(--stroke);
+  background: var(--accent);
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: progress-grow linear both;
+  animation-timeline: scroll(root);
+  pointer-events: none;
+}
+
+/* Le fil de la marge : il grandit avec le défilement de la page. */
+@keyframes thread-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.thread__line {
+  animation: thread-grow linear both;
+  animation-timeline: scroll(root);
+}
+
+@media (max-width: 767px) {
+  .thread {
+    width: 1px;
+  }
+}
+
+/* Parallaxe mesurée (bureau uniquement, jamais sur du texte à lire). */
+@keyframes drift {
+  from {
+    transform: translateY(-8%);
+  }
+  to {
+    transform: translateY(8%);
+  }
+}
+
+@media (min-width: 1024px) {
+  .parallax {
+    animation: drift linear both;
+    animation-timeline: view();
+    animation-range: cover;
+  }
+}
+
+/* Respiration : les éclats du logo pulsent toutes les 4 secondes. */
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav .mark__spark {
+    animation: pulse 4s ease-in-out 2.5s infinite;
+  }
+
+  .intro .nav .mark--intro .mark__spark {
+    animation:
+      draw 0.22s var(--ease-out) calc(1s + var(--i) * 120ms) forwards,
+      pulse 4s ease-in-out 3s infinite;
+  }
+}
+
+/* ═══ Bandeaux défilants ═══ */
+
+.marquee {
+  display: grid;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  overflow: hidden;
+}
+
+.marquee__row {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee__track {
+  display: inline-flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee 40s linear infinite;
+}
+
+.marquee__track--secondary {
+  animation-duration: 60s;
+  animation-direction: reverse;
+}
+
+.marquee__item {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.marquee__track--primary .marquee__item {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+}
+
+.marquee__track--secondary .marquee__item {
+  font-size: clamp(1.1rem, 2.4vw, 2rem);
+  color: var(--muted);
+}
+
+.marquee__sep {
+  width: 0.62em;
+  height: 0.62em;
+  margin-inline: 0.45em;
+  color: currentColor;
+}
+
+/* Mobile : plus lent, le défilement est déjà un mouvement. */
+@media (max-width: 767px) {
+  .marquee__track {
+    animation-duration: 60s;
+  }
+
+  .marquee__track--secondary {
+    animation-duration: 90s;
+  }
+}
+
+/* ═══ Navigation au défilement ═══ */
+
+.nav {
+  transition: transform 0.4s var(--ease-ui);
+  will-change: transform;
+}
+
+/* Elle se retire quand on descend, revient quand on remonte. */
+.nav--hidden {
+  transform: translateY(-100%);
+}
+
+.nav__bar {
+  position: relative;
+}
+
+.nav__bar > * {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.35s var(--ease-ui);
+}
+
+/* Fond et filet : un calque qui se rétracte (scaleY) et apparaît (opacity). */
+.nav__bar::before,
+.nav__bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.3s var(--ease-ui),
+    transform 0.35s var(--ease-ui);
+}
+
+.nav__bar::before {
+  top: 0;
+  height: 100%;
+  background: var(--nav-scrolled);
+  transform-origin: top;
+}
+
+.nav__bar::after {
+  top: calc(var(--nav-h) * 0.8 - 2px);
+  height: 1px;
+  background: var(--line);
+}
+
+.nav--scrolled .nav__bar::before {
+  opacity: 1;
+  transform: scaleY(0.8);
+}
+
+.nav--scrolled .nav__bar::after {
+  opacity: 0.18;
+}
+
+.nav--scrolled .nav__bar > * {
+  transform: translateY(calc(var(--nav-h) * -0.1));
+}
+
+/* Verre dépoli sur grand écran seulement : coûteux sur un téléphone d'entrée de gamme. */
+@media (min-width: 1024px) {
+  .nav__bar::before {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Focus sur les liens : les autres s'effacent. */
+.nav__link {
+  transition: opacity 0.3s var(--ease-ui);
+}
+
+.nav__links:hover .nav__link:not(:hover) {
+  opacity: 0.4;
+}
+
+/* ═══ Icône du menu : deux traits qui pivotent en croix ═══ */
+
+.burger {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  border: var(--stroke) solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--text);
+}
+
+.burger__line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: var(--stroke);
+  margin: -1px 0 0 -9px;
+  border-radius: var(--stroke);
+  background: currentColor;
+  transition: transform 0.35s var(--ease-ui);
+}
+
+.burger__line:first-child {
+  transform: translateY(-3.5px);
+}
+
+.burger__line:last-child {
+  transform: translateY(3.5px);
+}
+
+.burger--close {
+  border-color: #f2efe9;
+  color: #f2efe9;
+}
+
+.menu.is-open .burger--close .burger__line {
+  transition-delay: 0.25s;
+}
+
+.menu.is-open .burger--close .burger__line:first-child {
+  transform: rotate(45deg);
+}
+
+.menu.is-open .burger--close .burger__line:last-child {
+  transform: rotate(-45deg);
+}
+
+@media (min-width: 1100px) {
+  .nav__menu-btn {
+    display: none;
+  }
+}
+
+/* ═══ Menu mobile : volet qui monte, liens qui entrent un par un sous masque ═══ */
+
+.menu {
+  /* À la fermeture, le volet attend que les liens soient sortis. */
+  transition: transform 0.5s var(--ease-out) 0.3s;
+}
+
+.menu.is-open {
+  transition-delay: 0s;
+}
+
+.menu__mask {
+  overflow: hidden;
+}
+
+.menu__link {
+  transform: translateY(105%);
+  transition:
+    transform 0.45s var(--ease-out),
+    opacity 0.3s var(--ease-ui);
+  transition-delay: calc(var(--ri) * 60ms), 0s;
+}
+
+.menu.is-open .menu__link {
+  transform: none;
+  transition-delay: calc(0.25s + var(--i) * 60ms), 0s;
+}
+
+.menu__links:hover .menu__link:not(:hover) {
+  opacity: 0.4;
+}
+
+/* ═══ Chiffres qui comptent : largeur réservée par la valeur finale ═══ */
+
+.count {
+  display: inline-grid;
+  font-variant-numeric: tabular-nums;
+}
+
+.count__ghost,
+.count__live {
+  grid-area: 1 / 1;
+}
+
+.count__ghost {
+  visibility: hidden;
+}
+
+/* Mouvement réduit : rien ne bouge, tout est visible. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .parallax,
+  .poles .pole,
+  .thread__line,
+  .marquee__track,
+  .nav .mark__spark {
+    animation: none !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .progress {
+    display: none;
+  }
+}
+
+.marquee__defs {
+  position: absolute;
+  overflow: hidden;
 }

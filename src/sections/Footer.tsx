@@ -11,7 +11,7 @@ export function Footer({ index }: { index: number }) {
   return (
     <footer className="footer" data-section={index}>
       <p className="footer__giant" aria-hidden="true">
-        <span>Adwini</span>
+        <span className="parallax">Adwini</span>
       </p>
       <div className="wrap">
         <p className="footer__tagline">{t.tagline}</p>

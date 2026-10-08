@@ -37,7 +37,7 @@ export function Section({ id, index, label, title, hideTitle, aside, className =
             <RevealText as="h2" id={headingId} className="section__title" text={title} />
           )}
           {aside && (
-            <div className="section__aside" data-reveal="">
+            <div className="section__aside reveal">
               {aside}
             </div>
           )}

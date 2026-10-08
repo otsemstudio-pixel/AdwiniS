@@ -12,7 +12,7 @@ export function Poles({ index }: { index: number }) {
     <Section id="services" index={index} label={p.label} title={p.title} aside={<p className="lead">{p.intro}</p>} className="poles">
       <ol className="poles__list">
         {p.list.map((pole, i) => (
-          <li key={pole.code} className={`pole pole--${i + 1}`}>
+          <li key={pole.code} className={`card pole pole--${i + 1}`}>
             <LineArt name={ARTS[i]} />
             <p className="code">{pole.code}</p>
             <h3 className="pole__name">{pole.name}</h3>

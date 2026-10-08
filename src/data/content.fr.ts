@@ -292,6 +292,10 @@ const fr: Content = {
     langTitle: 'Langue et affichage',
     thanksCaption: 'merci, en langue ivoirienne',
   },
+  marquee: {
+    primary: ['Identité', 'Interfaces', 'Récits', 'Kigali', 'FR / EN'],
+    secondary: ['Mobile money', 'Français et anglais', 'Fichiers sources au client', 'Garantie de délai', 'Pictogrammes africains'],
+  },
   tagline: "Adwini Studio développe les codes visuels de la prochaine génération d'entreprises africaines.",
 };
 

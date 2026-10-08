@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Marquee } from './components/Marquee';
 import { Nav } from './components/Nav';
 import { ScrollCounter } from './components/ScrollCounter';
 import { Thread } from './components/Thread';
@@ -47,7 +48,15 @@ export default function App() {
     setProgress(Math.min(1, Math.max(0, end / main.offsetHeight)));
   }, [active]);
 
-  const sections = useMemo(() => SECTIONS.map((S, i) => <S key={i} index={i + 2} />), []);
+  // Le bandeau défilant s'insère entre les pôles et la philosophie (il n'est pas une section numérotée).
+  const sections = useMemo(
+    () =>
+      SECTIONS.flatMap((S, i) => {
+        const section = <S key={i} index={i + 2} />;
+        return S === Poles ? [section, <Marquee key="marquee" primary={t.marquee.primary} secondary={t.marquee.secondary} />] : [section];
+      }),
+    [t.marquee],
+  );
 
   return (
     <>

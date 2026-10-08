@@ -14,7 +14,7 @@ export function Differentiators({ index }: { index: number }) {
         {d.items.map((item, i) => {
           const last = i === d.items.length - 1;
           return (
-            <li key={item.title} className={`diff__item diff__item--${i + 1}`}>
+            <li key={item.title} className={`diff__item diff__item--${i + 1} reveal`}>
               <span className="diff__num" aria-hidden="true">
                 {pad(i + 1)}
               </span>

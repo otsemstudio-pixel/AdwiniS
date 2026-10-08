@@ -17,7 +17,7 @@ export function Philosophy({ index }: { index: number }) {
           </li>
         ))}
       </ul>
-      <div className="philosophy__conclusion" data-reveal="">
+      <div className="philosophy__conclusion reveal">
         <p>{p.conclusion}</p>
       </div>
     </Section>

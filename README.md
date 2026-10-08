@@ -113,6 +113,27 @@ Une fois le domaine acheté :
 
 Il n'y a aucun `requestAnimationFrame` dans le code. L'hydratation de React attend `requestIdleCallback`, pour ne pas retarder le premier affichage.
 
+## Mouvement
+
+Règle : **une animation forte par section**, et **seuls `transform` et `opacity` sont animés**. Seule exception : le tracé des traits SVG du logo et des illustrations (`stroke-dashoffset`). Aucune bibliothèque d'animation. Le CSS se trouve en fin de `src/styles/components.css` et de `src/styles/sections.css`.
+
+| Où | Quoi | Technique |
+|---|---|---|
+| Partout | Blocs, cartes, engagements : montée + apparition | `.reveal`, `animation-timeline: view()` (CSS pur) |
+| Titres | Mot par mot sous masque, 35 ms d'écart (400 ms max), 700 ms | `RevealText` + un seul `IntersectionObserver` |
+| Hero | Titre révélé au chargement, logo tracé en 900 ms puis éclats (1 fois par session) | CSS au chargement, `sessionStorage` |
+| Pôles (≥ 1024 px) | Titre collé, cartes qui grandissent de 0,96 à 1 à leur passage | `position: sticky` + `view()` |
+| Entre pôles et philosophie | Deux bandeaux défilants en sens opposés (40 s et 60 s) | `translateX(-50%)` en boucle, séquence doublée |
+| Formules (≥ 1024 px) | Cartes empilées, chacune collée 2 rem plus bas | `position: sticky`, `top` croissant |
+| Prix et délais | Comptent de 0 à leur valeur en 1,2 s (easeOutExpo) | `CountUp` : valeur finale déjà dans le HTML |
+| Nom, pied de page (≥ 1024 px) | Filigrane du logo et mot « ADWINI » en parallaxe | `view()`, jamais sur du texte à lire |
+| Toute la page | Fil de la marge et barre de progression (2 px, violet) | `animation-timeline: scroll(root)` |
+| Navigation | Se rétracte après 100 px, se retire en descendant, revient en remontant | JS limité à une lecture toutes les 100 ms |
+| Menu mobile | Volet qui monte, liens un par un (60 ms), sortie inverse, icône qui pivote en croix | CSS |
+| Survols | Soulignement qui se dessine puis se replie à droite ; fond de bouton qui monte ; carte soulevée de 6 px ; liens voisins à 40 % | CSS, 250–350 ms |
+
+**Sans support des animations pilotées par le défilement** (bloc `@supports not (animation-timeline: view())`), tout le contenu est visible immédiatement. **Avec `prefers-reduced-motion`**, rien ne bouge : bandeaux, parallaxe et révélations sont coupés.
+
 ## Architecture
 
 ```
