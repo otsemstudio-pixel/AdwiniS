@@ -7,7 +7,7 @@
 export type Lang = 'fr' | 'en';
 
 export interface SectionHead {
-  /** Nom court affiché dans l'étiquette numérotée : « 01 / PHILOSOPHIE ». */
+  /** Nom affiché à côté du numéro cerclé : « PHILOSOPHIE ». */
   label: string;
   title: string;
 }
@@ -20,11 +20,11 @@ export interface Pole {
 }
 
 export interface Plan {
-  /** Identifiant stable, relié aux prix dans data/pricing.ts. */
+  /** Identifiant stable, relié aux prix dans data/site.ts. */
   id: 'launch' | 'growth' | 'signature' | 'whitelabel';
   name: string;
   audience: string;
-  /** Texte affiché à la place du prix (« Sur devis »). Vide si le prix est chiffré. */
+  /** Texte affiché à la place du prix (« Sur devis »). */
   priceNote?: string;
   featuredNote?: string;
 }
@@ -56,11 +56,7 @@ export interface CardField {
 }
 
 export interface Content {
-  meta: {
-    title: string;
-    description: string;
-    locale: string;
-  };
+  meta: { title: string; description: string; locale: string };
   skipLink: string;
   nav: {
     work: string;
@@ -72,22 +68,18 @@ export interface Content {
     close: string;
     langLabel: string;
     primaryLabel: string;
+    themeToDark: string;
+    themeToLight: string;
   };
   hero: {
     titleLines: [string, string];
     subtitle: string;
     primary: string;
     secondary: string;
-    visualLabel: string;
+    scroll: string;
   };
-  philosophy: SectionHead & {
-    lines: string[];
-    conclusion: string;
-  };
-  poles: SectionHead & {
-    intro: string;
-    list: Pole[];
-  };
+  poles: SectionHead & { intro: string; list: Pole[] };
+  philosophy: SectionHead & { lines: string[]; conclusion: string };
   subscription: SectionHead & {
     intro: string;
     perMonth: string;
@@ -101,11 +93,7 @@ export interface Content {
     excluded: string[];
     cta: string;
   };
-  fixed: SectionHead & {
-    intro: string;
-    from: string;
-    offers: FixedOffer[];
-  };
+  fixed: SectionHead & { intro: string; from: string; offers: FixedOffer[] };
   work: SectionHead & {
     intro: string;
     tag: string;
@@ -118,6 +106,13 @@ export interface Content {
     disclaimer: string;
     projects: Project[];
   };
+  differentiators: SectionHead & {
+    intro: string;
+    items: { title: string; body: string }[];
+    /** Noms des pictogrammes dessinés par le studio, dans l'ordre du dessin. */
+    iconNames: [string, string, string, string];
+  };
+  tech: SectionHead & { body: string };
   network: SectionHead & {
     body: string[];
     coreTitle: string;
@@ -126,20 +121,7 @@ export interface Content {
     specialists: string[];
     promise: string;
   };
-  tech: SectionHead & {
-    body: string;
-  };
-  name: SectionHead & {
-    word: string;
-    phonetic: string;
-    story: string;
-    origin: string;
-  };
-  differentiators: SectionHead & {
-    items: { code: string; title: string; body: string }[];
-    /** Noms des pictogrammes dessinés par le studio, dans l'ordre du dessin. */
-    iconNames: [string, string, string, string];
-  };
+  name: SectionHead & { story: string; origin: string };
   card: SectionHead & {
     intro: string;
     fields: CardField[];
@@ -168,6 +150,7 @@ export interface Content {
     whatsappMessage: string;
   };
   footer: {
+    label: string;
     navTitle: string;
     socialTitle: string;
     langTitle: string;

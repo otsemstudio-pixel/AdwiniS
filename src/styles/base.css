@@ -26,11 +26,10 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: var(--fs-body);
+  line-height: 1.65;
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -39,10 +38,9 @@ h3,
 h4 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.02em;
-  /* Dernier recours : un mot plus large que l'écran se coupe plutôt que de déborder. */
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
   overflow-wrap: break-word;
 }
 
@@ -64,8 +62,7 @@ ol {
 
 a {
   color: inherit;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
+  text-decoration: none;
 }
 
 button,
@@ -89,16 +86,15 @@ svg {
   color: var(--bg);
 }
 
-/* Focus : visible, contrasté, jamais supprimé. */
+/* Focus : un trait de 2 px, visible et contrasté, jamais supprimé. */
 :focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
+  outline: var(--stroke) solid var(--text);
+  outline-offset: 4px;
+  border-radius: 6px;
 }
 
-/* Sur les blocs à angle coupé, le clip-path rognerait le contour : on le rentre. */
-.cut:focus-visible,
-.cut :focus-visible {
-  outline-offset: -6px;
+main {
+  position: relative;
 }
 
 main:focus,
@@ -120,14 +116,14 @@ section[tabindex='-1']:focus {
 
 .skip-link {
   position: fixed;
-  top: 8px;
-  left: 8px;
+  top: 12px;
+  left: 12px;
   z-index: 100;
-  padding: 12px 18px;
+  padding: 12px 20px;
+  border-radius: 999px;
   background: var(--text);
   color: var(--bg);
   font-weight: 600;
-  text-decoration: none;
   transform: translateY(-200%);
 }
 
@@ -136,8 +132,8 @@ section[tabindex='-1']:focus {
 }
 
 .wrap {
-  width: min(100% - 2 * var(--gutter), var(--max));
-  margin-inline: auto;
+  position: relative;
+  padding-inline: var(--margin);
 }
 
 /* Mouvement réduit : tout apparaît instantanément. */

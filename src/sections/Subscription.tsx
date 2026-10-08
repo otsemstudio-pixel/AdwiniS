@@ -1,30 +1,29 @@
+import { Sparks } from '../components/Logo';
 import { Section } from '../components/Section';
 import { pricing } from '../data/site';
 import { useLanguage } from '../hooks/useLanguage';
 import { formatUSD } from '../utils/format';
 
-/** Formules d'abonnement. Cartes empilées sur mobile, jamais un tableau à faire défiler. */
+/** Formules d'abonnement. Prix à l'échelle d'un titre ; cartes empilées sur mobile. */
 export function Subscription({ index }: { index: number }) {
   const { t, lang } = useLanguage();
   const s = t.subscription;
   return (
-    <Section
-      id="abonnement"
-      index={index}
-      label={s.label}
-      title={s.title}
-      aside={<p className="lead">{s.intro}</p>}
-      className="subscription"
-    >
+    <Section id="abonnement" index={index} label={s.label} title={s.title} aside={<p className="lead">{s.intro}</p>} className="subscription">
       <ul className="plans">
         {s.plans.map((plan) => {
           const data = pricing[plan.id];
           const headingId = `plan-${plan.id}`;
           return (
-            <li key={plan.id} className={`plan cut ${data.featured ? 'plan--featured filet' : ''}`} aria-labelledby={headingId}>
+            <li key={plan.id} className={`card plan ${data.featured ? 'plan--featured' : ''}`} aria-labelledby={headingId}>
               <div className="plan__top">
                 <p className="code">{data.code}</p>
-                {plan.featuredNote && <p className="plan__badge">{plan.featuredNote}</p>}
+                {plan.featuredNote && (
+                  <p className="plan__badge">
+                    <Sparks className="plan__sparks" />
+                    {plan.featuredNote}
+                  </p>
+                )}
               </div>
               <h3 id={headingId} className="plan__name">
                 {plan.name}
@@ -35,7 +34,7 @@ export function Subscription({ index }: { index: number }) {
                   <span className="plan__amount plan__amount--quote">{plan.priceNote}</span>
                 ) : (
                   <>
-                    <span className="plan__amount">{formatUSD(data.price, lang)}</span>{' '}
+                    <span className="plan__amount">{formatUSD(data.price, lang)}</span>
                     <span className="plan__per">{s.perMonth}</span>
                   </>
                 )}

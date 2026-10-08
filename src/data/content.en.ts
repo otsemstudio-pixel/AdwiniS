@@ -18,13 +18,15 @@ const en: Content = {
     close: 'Close menu',
     langLabel: 'Site language',
     primaryLabel: 'Main navigation',
+    themeToDark: 'Switch to dark mode',
+    themeToLight: 'Switch to light mode',
   },
   hero: {
     titleLines: ['African ideas.', 'Seen differently.'],
     subtitle: 'Adwini Studio builds the visual codes of the next generation of African companies.',
     primary: 'Start a project',
     secondary: 'Explore the studio',
-    visualLabel: 'Geometric pattern built from the module of the Adwini monogram',
+    scroll: 'Scroll',
   },
   philosophy: {
     label: 'Philosophy',
@@ -67,30 +69,26 @@ const en: Content = {
   },
   differentiators: {
     label: 'Commitments',
-    title: 'What changes when you work with us.',
+    title: 'What changes with us.',
+    intro: 'Five commitments, in writing, on every single project.',
     items: [
       {
-        code: 'ENG—001',
         title: 'Pay with mobile money',
         body: 'Mobile money works just as well as a card. No international bank account needed.',
       },
       {
-        code: 'ENG—002',
         title: 'English and French',
         body: 'Every deliverable ships in both languages, written and checked by people — never machine-translated and left at that.',
       },
       {
-        code: 'ENG—003',
         title: 'Your source files',
         body: 'You own the source files. Walk away with everything, no exit fee.',
       },
       {
-        code: 'ENG—004',
         title: 'On-time guarantee',
         body: 'If we deliver late, the delay is credited back to your subscription.',
       },
       {
-        code: 'ENG—005',
         title: 'Icons drawn for here',
         body:
           'Off-the-shelf icon sets were drawn for a Western everyday. The mobile money wallet, the moto-taxi, the market stall and the CFA franc are missing. So we draw our own African icons and typefaces.',
@@ -234,13 +232,11 @@ const en: Content = {
   tech: {
     label: 'Technology',
     title: 'Technology moves fast. Culture runs deeper.',
-    body: 'We use technology to speed up the work — never to replace the human eye that directs it.',
+    body: 'We use technology to speed up the work — never to replace the eye that directs it.',
   },
   name: {
     label: 'The name',
-    title: 'Why Adwini.',
-    word: 'Adwini',
-    phonetic: '/ a·dwi·ni /',
+    title: 'Why Adwini',
     story:
       'Adwini is the Twi word for craft — the work of the one who shapes, draws and adorns. It is how Akan cultures name the act of giving something form.',
     origin: 'TWI — AKAN LANGUAGE',
@@ -286,9 +282,10 @@ const en: Content = {
     whatsappMessage: 'Hello Adwini Studio, I’d like to talk about a project.',
   },
   footer: {
+    label: 'End',
     navTitle: 'Navigate',
     socialTitle: 'Social',
-    langTitle: 'Language',
+    langTitle: 'Language & display',
     thanksCaption: 'thank you, in an Ivorian language',
   },
   tagline: 'Adwini Studio builds the visual codes of the next generation of African companies.',

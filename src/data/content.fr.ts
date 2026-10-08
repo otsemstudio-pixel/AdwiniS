@@ -18,6 +18,8 @@ const fr: Content = {
     close: 'Fermer le menu',
     langLabel: 'Langue du site',
     primaryLabel: 'Navigation principale',
+    themeToDark: 'Passer en mode sombre',
+    themeToLight: 'Passer en mode clair',
   },
   hero: {
     titleLines: ['Des idées africaines.', 'Vues autrement.'],
@@ -25,7 +27,7 @@ const fr: Content = {
       "Adwini Studio développe les codes visuels de la prochaine génération d'entreprises africaines.",
     primary: 'Démarrer un projet',
     secondary: 'Explorer le studio',
-    visualLabel: 'Trame géométrique construite à partir du module du monogramme Adwini',
+    scroll: 'Défiler',
   },
   philosophy: {
     label: 'Philosophie',
@@ -68,30 +70,26 @@ const fr: Content = {
   },
   differentiators: {
     label: 'Engagements',
-    title: 'Ce qui change quand vous travaillez avec nous.',
+    title: 'Ce qui change avec nous.',
+    intro: 'Cinq engagements, écrits noir sur blanc, valables pour chaque projet.',
     items: [
       {
-        code: 'ENG—001',
         title: 'Mobile money accepté',
         body: 'Vous payez par mobile money autant que par carte. Aucune banque internationale requise.',
       },
       {
-        code: 'ENG—002',
         title: 'Français et anglais',
         body: 'Chaque livrable existe dans les deux langues, rédigé et vérifié, pas traduit à la machine.',
       },
       {
-        code: 'ENG—003',
         title: 'Vos fichiers sources',
         body: 'Les fichiers sources vous appartiennent. Vous repartez avec tout, sans frais de sortie.',
       },
       {
-        code: 'ENG—004',
         title: 'Garantie de délai',
         body: 'Si nous livrons en retard, le retard est crédité sur votre abonnement.',
       },
       {
-        code: 'ENG—005',
         title: 'Nos propres pictogrammes',
         body:
           "Les bibliothèques d'icônes existantes ont été dessinées pour un quotidien occidental : le portefeuille mobile money, la moto-taxi, l'étal de marché ou le franc CFA n'y figurent pas. Nous dessinons nos propres pictogrammes et typographies africains.",
@@ -236,13 +234,11 @@ const fr: Content = {
   tech: {
     label: 'Technologie',
     title: 'La technologie va vite. La culture va plus profond.',
-    body: 'Nous utilisons la technologie pour accélérer le travail, pas pour remplacer le regard humain qui le dirige.',
+    body: 'Nous utilisons la technologie pour accélérer le travail, pas pour remplacer le regard qui le dirige.',
   },
   name: {
     label: 'Le nom',
-    title: 'Pourquoi Adwini.',
-    word: 'Adwini',
-    phonetic: '/ a·dwi·ni /',
+    title: 'Pourquoi Adwini',
     story:
       'Adwini, en twi, désigne l’ouvrage — le travail de celui qui façonne, dessine et orne. C’est le mot par lequel les cultures akan nomment le métier de créer une forme.',
     origin: 'TWI — LANGUE AKAN',
@@ -290,9 +286,10 @@ const fr: Content = {
     whatsappMessage: 'Bonjour Adwini Studio, j’aimerais parler d’un projet.',
   },
   footer: {
+    label: 'Fin',
     navTitle: 'Navigation',
     socialTitle: 'Réseaux',
-    langTitle: 'Langue',
+    langTitle: 'Langue et affichage',
     thanksCaption: 'merci, en langue ivoirienne',
   },
   tagline: "Adwini Studio développe les codes visuels de la prochaine génération d'entreprises africaines.",

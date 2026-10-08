@@ -154,7 +154,7 @@ export function CardMaker({ index }: { index: number }) {
               </div>
             ))}
           </div>
-          <p className="cardmaker__privacy filet">{c.privacy}</p>
+          <p className="cardmaker__privacy">{c.privacy}</p>
           <p className="cardmaker__note">{c.shareNote}</p>
         </form>
 
@@ -162,7 +162,7 @@ export function CardMaker({ index }: { index: number }) {
             Bureau : aperçu et actions collent ensemble dans la colonne de droite. */}
         <div className="cardmaker__stage">
         <div className="cardmaker__preview">
-          <p className="cardmaker__face meta-mono" aria-live="polite">
+          <p className="cardmaker__face meta" aria-live="polite">
             {face === 'front' ? c.front : c.back}
           </p>
           <div className={`bcard ${face === 'back' ? 'is-flipped' : ''}`}>

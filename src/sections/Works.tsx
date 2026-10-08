@@ -26,8 +26,8 @@ export function Works({ index }: { index: number }) {
       <ul className="works__grid">
         {w.projects.map((p, i) => (
           <li key={p.code} className={`work work--${i + 1}`}>
-            <article className="work__card cut">
-              <div className="placeholder work__image" aria-hidden="true">
+            <article className="card work__card">
+              <div className="placeholder wipe work__image" data-reveal="" aria-hidden="true">
                 <span>{p.imageLabel}</span>
               </div>
               <div className="work__body">
@@ -41,7 +41,7 @@ export function Works({ index }: { index: number }) {
                 <p className="work__summary">{p.summary}</p>
                 <p className="work__reveal" aria-hidden="true">
                   <span className="code">{p.code}</span>
-                  <span className="work__view">{w.view} →</span>
+                  <span className="work__view">{w.view}</span>
                 </p>
               </div>
             </article>

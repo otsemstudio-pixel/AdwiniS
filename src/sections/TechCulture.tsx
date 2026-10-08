@@ -5,7 +5,9 @@ export function TechCulture({ index }: { index: number }) {
   const { t } = useLanguage();
   return (
     <Section id="technologie" index={index} label={t.tech.label} title={t.tech.title} tone="ink" className="tech">
-      <p className="tech__body">{t.tech.body}</p>
+      <div className="tech__body" data-reveal="">
+        <p>{t.tech.body}</p>
+      </div>
     </Section>
   );
 }

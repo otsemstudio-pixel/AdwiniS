@@ -1,38 +1,30 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { prefersReducedMotion } from '../utils/motion';
 
 /**
- * Ajoute la classe `is-visible` aux éléments `[data-reveal]` contenus dans la
- * référence quand ils entrent dans l'écran. Un seul observateur par conteneur,
- * déconnecté dès que tout est apparu. Avec `prefers-reduced-motion`, le CSS
- * affiche déjà tout : on ne fait rien.
+ * Révélations au défilement : un seul IntersectionObserver pour toute la page.
+ * Chaque élément `[data-reveal]` reçoit la classe `is-in` une seule fois,
+ * dès que 15 % de sa surface est visible. Le CSS fait le reste (masques, volets, tracés).
+ * Relancé à chaque changement de langue pour capter les éléments recréés.
  */
-export function useReveal<T extends HTMLElement>() {
-  const ref = useRef<T>(null);
-
+export function useRevealAll(key: unknown) {
   useEffect(() => {
-    const root = ref.current;
-    if (!root) return;
-    const targets = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal]'));
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce || !('IntersectionObserver' in window)) {
-      targets.forEach((el) => el.classList.add('is-visible'));
+    const targets = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-in)'));
+    if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
+      targets.forEach((el) => el.classList.add('is-in'));
       return;
     }
-    let remaining = targets.length;
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
-          entry.target.classList.add('is-visible');
+          entry.target.classList.add('is-in');
           observer.unobserve(entry.target);
-          if (--remaining === 0) observer.disconnect();
         }
       },
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.2 },
+      { threshold: 0.15 },
     );
     targets.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
-
-  return ref;
+  }, [key]);
 }

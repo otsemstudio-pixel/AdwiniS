@@ -2,7 +2,7 @@ import { useEffect, useRef, type MouseEvent, type RefObject } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { prefersReducedMotion } from '../utils/motion';
 import { LanguageSwitch } from './LanguageSwitch';
-import { Logo } from './Logo';
+import { LogoMark } from './Logo';
 import { navLinks } from './navLinks';
 
 interface MobileMenuProps {
@@ -26,7 +26,10 @@ export function MobileMenu({ open, onClose, returnFocus }: MobileMenuProps) {
     if (open && !el.open) {
       el.showModal();
       document.documentElement.classList.add('is-locked');
-      requestAnimationFrame(() => el.classList.add('is-open'));
+      // Lecture de mise en page forcée : l'état fermé est appliqué avant d'ajouter
+      // la classe d'ouverture, donc la transition du volet joue (sans requestAnimationFrame).
+      void el.offsetHeight;
+      el.classList.add('is-open');
     } else if (!open && el.open) {
       el.classList.remove('is-open');
       const finish = () => {
@@ -70,9 +73,9 @@ export function MobileMenu({ open, onClose, returnFocus }: MobileMenuProps) {
     >
       <div className="menu__top">
         <span className="menu__logo">
-          <Logo size={30} cut="var(--ink)" />
+          <LogoMark size={36} />
         </span>
-        <button type="button" className="menu__close" onClick={onClose}>
+        <button type="button" className="btn btn--outline-light btn--small" onClick={onClose}>
           {t.nav.close}
         </button>
       </div>
@@ -95,7 +98,7 @@ export function MobileMenu({ open, onClose, returnFocus }: MobileMenuProps) {
           {t.nav.cta}
         </a>
         <LanguageSwitch className="lang-switch--on-ink" />
-        <p className="meta-mono">KIGALI — RWANDA</p>
+        <p className="meta">KIGALI — RWANDA</p>
       </div>
     </dialog>
   );

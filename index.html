@@ -8,8 +8,8 @@
       name="description"
       content="Studio de design basé à Kigali. Identités de marque, interfaces et récits visuels pour la prochaine génération d'entreprises africaines. Abonnement à prix affichés, en français et en anglais."
     />
-    <meta name="theme-color" content="#F5F1E8" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#16181C" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FAF8F4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0D0E10" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
 
     <!-- URL canonique du site (GitHub Pages) -->
@@ -51,8 +51,9 @@
     <meta name="twitter:image:alt" content="Adwini Studio — Des idées africaines. Vues autrement." />
 
     <script>
-      // Langue choisie avant le premier affichage (même logique que hooks/useLanguage.tsx) :
-      // mémorisée, sinon celle du navigateur, sinon français. Pose aussi la classe « js ».
+      // Avant le premier affichage (même logique que hooks/useLanguage.tsx et hooks/useTheme.ts) :
+      // langue (mémorisée, sinon navigateur, sinon français), thème mémorisé,
+      // tracé du logo une seule fois par session, et classe « js » pour les révélations.
       (function () {
         var h = document.documentElement, l = 'fr';
         try {
@@ -68,14 +69,29 @@
         h.lang = l;
         h.setAttribute('data-lang', l);
         h.className += ' js';
+        try {
+          var t = localStorage.getItem('adwini-theme');
+          if (t === 'light' || t === 'dark') h.setAttribute('data-theme', t);
+        } catch (e) {}
+        try {
+          if (!sessionStorage.getItem('adwini-intro')) {
+            h.className += ' intro';
+            sessionStorage.setItem('adwini-intro', '1');
+          }
+        } catch (e) {}
+        // Secours : si l'application n'a pas démarré après 8 s, tout le contenu s'affiche.
+        setTimeout(function () {
+          if ((' ' + h.className + ' ').indexOf(' app ') < 0) h.className += ' no-reveal';
+        }, 8000);
       })();
     </script>
     <style>
       /* Version anglaise prérendue : on attend qu'elle remplace la française (aucun flash de langue). */
       html[data-lang='en'] #root[data-ssr='fr'] { visibility: hidden; }
       /* Fond posé avant le CSS principal : aucun flash blanc en mode sombre. */
-      html { background: #f5f1e8; }
-      @media (prefers-color-scheme: dark) { html { background: #16181c; } }
+      html { background: #faf8f4; }
+      @media (prefers-color-scheme: dark) { html:not([data-theme='light']) { background: #0d0e10; } }
+      html[data-theme='dark'] { background: #0d0e10; }
     </style>
   </head>
   <body>

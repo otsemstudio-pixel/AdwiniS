@@ -4,18 +4,14 @@
  * on incorpore donc les fichiers woff2 en data URI dans une balise <style>.
  * Ce module (et les polices qu'il référence) n'est chargé qu'au clic sur « Télécharger ».
  */
-import fraunces400 from '@fontsource/fraunces/files/fraunces-latin-400-normal.woff2?url';
-import fraunces700 from '@fontsource/fraunces/files/fraunces-latin-700-normal.woff2?url';
+import outfit600 from '@fontsource/outfit/files/outfit-latin-600-normal.woff2?url';
 import archivo400 from '@fontsource/archivo/files/archivo-latin-400-normal.woff2?url';
-import archivo700 from '@fontsource/archivo/files/archivo-latin-700-normal.woff2?url';
-import mono400 from '@fontsource/space-mono/files/space-mono-latin-400-normal.woff2?url';
+import mono400 from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2?url';
 
 const FONTS = [
-  { family: 'Fraunces', weight: 400, url: fraunces400 },
-  { family: 'Fraunces', weight: 700, url: fraunces700 },
+  { family: 'Outfit', weight: 600, url: outfit600 },
   { family: 'Archivo', weight: 400, url: archivo400 },
-  { family: 'Archivo', weight: 700, url: archivo700 },
-  { family: 'Space Mono', weight: 400, url: mono400 },
+  { family: 'JetBrains Mono', weight: 400, url: mono400 },
 ];
 
 let fontCss: Promise<string> | null = null;

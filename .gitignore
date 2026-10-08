@@ -4,3 +4,4 @@ dist
 .check
 dist-ssr
 *.tsbuildinfo
+.tools

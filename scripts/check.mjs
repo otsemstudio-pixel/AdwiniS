@@ -65,18 +65,19 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 const pairs = [
-  ['Terre cuite / ivoire', '#9A5B36', '#F5F1E8', 4.5],
-  ['Terre cuite / blanc', '#9A5B36', '#FFFFFF', 4.5],
-  ['Encre / ivoire', '#16181C', '#F5F1E8', 4.5],
-  ['Secondaire / ivoire', '#5E5C55', '#F5F1E8', 4.5],
-  ['Secondaire / blanc', '#5E5C55', '#FFFFFF', 4.5],
-  ['Secondaire / bordure (emplacements image)', '#5E5C55', '#DDD6C7', 4.5],
-  ['Ivoire / terre cuite (bouton survolé)', '#F5F1E8', '#9A5B36', 4.5],
-  ['Terre cuite clair / encre', '#C98A5E', '#16181C', 4.5],
-  ['Terre cuite clair / carte sombre', '#C98A5E', '#1F2227', 4.5],
-  ['Secondaire sombre / encre', '#B9B3A6', '#16181C', 4.5],
-  ['Tertiaire / encre (mode sombre)', '#8C877C', '#16181C', 4.5],
-  ['Tertiaire / ivoire (décoratif ou ≥ 24 px)', '#8C877C', '#F5F1E8', 3],
+  ['Terre cuite / fond clair', '#9A5B36', '#FAF8F4', 4.5],
+  ['Terre cuite / blanc (cartes)', '#9A5B36', '#FFFFFF', 4.5],
+  ['Texte / fond clair', '#16181C', '#FAF8F4', 4.5],
+  ['Secondaire / fond clair', '#5E5C55', '#FAF8F4', 4.5],
+  ['Secondaire / blanc (cartes)', '#5E5C55', '#FFFFFF', 4.5],
+  ['Secondaire / emplacements image', '#5E5C55', '#ECE8E0', 4.5],
+  ['Texte sombre / fond sombre', '#F2EFE9', '#0D0E10', 4.5],
+  ['Secondaire sombre / fond sombre', '#9B968C', '#0D0E10', 4.5],
+  ['Secondaire sombre / cartes sombres', '#9B968C', '#16181C', 4.5],
+  ['Secondaire sombre / emplacements image', '#9B968C', '#1F2226', 4.5],
+  ['Terre cuite clair / fond sombre', '#C98A5E', '#0D0E10', 4.5],
+  ['Terre cuite clair / encre (section Technologie)', '#C98A5E', '#16181C', 4.5],
+  ['Secondaire / ivoire (section inversée, sombre)', '#5E5C55', '#F2EFE9', 4.5],
 ];
 for (const [label, fg, bg, min] of pairs) {
   const r = ratio(fg, bg);
@@ -132,7 +133,7 @@ async function scrollThrough(page) {
 
 /* 3. Débordements ------------------------------------------------------- */
 section('Responsive');
-for (const width of [320, 375, 768, 1440]) {
+for (const width of [320, 375, 768, 1440, 1920]) {
   const { page, context } = await newPage({ width, height: width < 768 ? 740 : 900 });
   await page.goto(base, { waitUntil: 'networkidle0' });
   await page.evaluate(() => document.fonts.ready);
@@ -322,13 +323,15 @@ section('prefers-reduced-motion');
   const { page, context } = await newPage({ media: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await page.goto(base, { waitUntil: 'networkidle0' });
   const r = await page.evaluate(() => {
-    const hidden = [...document.querySelectorAll('.reveal')].filter((el) => getComputedStyle(el).opacity !== '1').length;
-    const anim = getComputedStyle(document.querySelector('.hero-pattern__m')).animationName;
+    // Aucun mot sous masque, aucun bloc rogné, aucun volet : tout est visible sans défiler.
+    const hidden = [...document.querySelectorAll('.split--scroll .w__i')].filter((el) => getComputedStyle(el).transform !== 'none').length +
+      [...document.querySelectorAll('[data-reveal]:not(.split):not(.wipe):not(.line-art) > *')].filter((el) => !['none', 'inset(0px)'].includes(getComputedStyle(el).clipPath)).length;
+    const anim = getComputedStyle(document.querySelector('.split--load .w__i')).animationName;
     const smooth = getComputedStyle(document.documentElement).scrollBehavior;
     return { hidden, anim, smooth };
   });
-  ok(r.hidden === 0, 'Lignes de la philosophie visibles sans défilement');
-  ok(r.anim === 'none', 'Trame du hero sans animation');
+  ok(r.hidden === 0, 'Tous les textes visibles sans défilement ni animation', String(r.hidden));
+  ok(r.anim === 'none', 'Titre du hero sans animation');
   ok(r.smooth === 'auto', 'Pas de défilement animé');
   await context.close();
 }
@@ -339,9 +342,21 @@ for (const width of [375, 1440]) {
   const { page, context } = await newPage({ width, height: 800, media: [{ name: 'prefers-color-scheme', value: 'dark' }] });
   await page.goto(base, { waitUntil: 'networkidle0' });
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  ok(bg === 'rgb(22, 24, 28)', `${width} px : fond encre en mode sombre`, bg);
+  ok(bg === 'rgb(13, 14, 16)', `${width} px : fond sombre (système)`, bg);
   await scrollThrough(page);
   await page.screenshot({ path: resolve(out, `dark-${width}.png`), fullPage: true });
+  await context.close();
+}
+
+section('Bascule de thème');
+{
+  const { page, context } = await newPage();
+  await page.goto(base, { waitUntil: 'networkidle0' });
+  await page.click('.nav__desktop .icon-btn');
+  const t1 = await page.evaluate(() => ({ bg: getComputedStyle(document.body).backgroundColor, stored: localStorage.getItem('adwini-theme') }));
+  ok(t1.bg === 'rgb(13, 14, 16)' && t1.stored === 'dark', 'Clair → sombre, choix mémorisé', t1.bg);
+  await page.reload({ waitUntil: 'networkidle0' });
+  ok((await page.evaluate(() => document.documentElement.dataset.theme)) === 'dark', 'Thème conservé après rechargement');
   await context.close();
 }
 

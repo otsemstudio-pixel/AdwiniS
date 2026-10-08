@@ -1,24 +1,24 @@
+import { GridLines } from '../components/GridLines';
+import { RevealText } from '../components/RevealText';
 import { Section } from '../components/Section';
 import { useLanguage } from '../hooks/useLanguage';
-import { useReveal } from '../hooks/useReveal';
 
+/** Une ligne à la fois : chaque affirmation monte sous son masque en entrant dans l'écran. */
 export function Philosophy({ index }: { index: number }) {
   const { t } = useLanguage();
-  const ref = useReveal<HTMLDivElement>();
   const p = t.philosophy;
   return (
     <Section id="studio" index={index} label={p.label} title={p.title} className="philosophy">
-      <div ref={ref} className="philosophy__body">
-        <ul className="philosophy__lines">
-          {p.lines.map((line) => (
-            <li key={line} data-reveal className="philosophy__line reveal">
-              {line}
-            </li>
-          ))}
-        </ul>
-        <p data-reveal className="philosophy__conclusion reveal">
-          {p.conclusion}
-        </p>
+      <GridLines />
+      <ul className="philosophy__lines">
+        {p.lines.map((line, i) => (
+          <li key={line} className={`philosophy__line philosophy__line--${i + 1}`}>
+            <RevealText text={line} />
+          </li>
+        ))}
+      </ul>
+      <div className="philosophy__conclusion" data-reveal="">
+        <p>{p.conclusion}</p>
       </div>
     </Section>
   );

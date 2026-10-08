@@ -1,23 +1,19 @@
+import { LogoMark } from '../components/Logo';
 import { Section } from '../components/Section';
 import { useLanguage } from '../hooks/useLanguage';
 
-/** Le récit du nom. Le mot est composé très grand, comme une entrée de dictionnaire. */
+/** Le nom, traité comme une page de livre : beaucoup de vide, le texte seul, le symbole en filigrane. */
 export function Name({ index }: { index: number }) {
   const { t } = useLanguage();
   const n = t.name;
   return (
-    <Section id="nom" index={index} label={n.label} title={n.title} className="name">
-      <div className="name__entry">
-        <p className="name__word" lang="tw">
-          {n.word}
-        </p>
-        <p className="name__meta">
-          <span className="code">{n.phonetic}</span>
-          <span className="meta-mono">{n.origin}</span>
-        </p>
-        <blockquote className="name__story">
+    <Section id="nom" index={index} label={n.label} title={n.title} hideTitle className="name">
+      <div className="name__page">
+        <LogoMark size={480} className="name__watermark" />
+        <blockquote className="name__story" data-reveal="">
           <p>{n.story}</p>
         </blockquote>
+        <p className="meta name__origin">{n.origin}</p>
       </div>
     </Section>
   );

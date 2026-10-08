@@ -1,99 +1,88 @@
 /*
- * Jetons de design Adwini Studio.
- * Palette de marque : valeurs exactes de la charte. Les rôles (--bg, --text…)
- * sont redéfinis en mode sombre ; les composants n'utilisent que les rôles.
+ * Jetons de design Adwini Studio — v2 (noir et ivoire, le trait comme système).
+ * Les composants n'utilisent que les rôles (--bg, --text, --line…), redéfinis en sombre.
  *
- * Contrastes vérifiés (WCAG 2.1, voir scripts/check.mjs) :
- *   terre cuite #9A5B36 / ivoire #F5F1E8 : 4,74:1  → texte courant OK (≥ 4,5)
- *   terre cuite #9A5B36 / blanc #FFFFFF  : 5,35:1
- *   texte secondaire #5E5C55 / ivoire    : 5,93:1
- *   texte tertiaire #8C877C / ivoire     : 3,17:1  → réservé aux éléments décoratifs
- *                                                    et au texte ≥ 24 px en mode clair
- *   terre cuite clair #C98A5E / encre    : 6,18:1
+ * Contrastes vérifiés (WCAG 2.1, scripts/check.mjs) :
+ *   terre cuite #9A5B36 / fond #FAF8F4   : 5,05:1 → texte courant OK, aucune correction
+ *   texte secondaire #5E5C55 / #FAF8F4   : 6,29:1
+ *   terre cuite clair #C98A5E / #0D0E10  : 7,01:1
+ *   texte secondaire sombre #9B968C / #0D0E10 : 6,98:1
  */
-
-/*
- * Repli métrique de Fraunces : Georgia mise à l'échelle (size-adjust mesuré dans Chrome)
- * pour que les titres gardent leur largeur quand la vraie police arrive (font-display: swap).
- * Les polices ne sont pas préchargées : mesuré sur 3G + CPU ×4, le préchargement
- * retardait le premier affichage d'environ une seconde.
- */
-@font-face {
-  font-family: 'Fraunces Fallback';
-  font-weight: 700;
-  src: local('Georgia Bold'), local('Georgia-Bold');
-  size-adjust: 95.4%;
-}
-
-@font-face {
-  font-family: 'Fraunces Fallback';
-  font-weight: 400;
-  src: local('Georgia');
-  size-adjust: 105.9%;
-}
 
 :root {
-  /* Palette de marque */
-  --ivory: #f5f1e8;
-  --white: #ffffff;
-  --ink: #16181c;
-  --terracotta: #9a5b36;
-  --terracotta-light: #c98a5e;
-  --line: #ddd6c7;
-  --grey-2: #5e5c55;
-  --grey-3: #8c877c;
-
-  /* Rôles — mode clair */
   color-scheme: light;
-  --bg: var(--ivory);
-  --surface: var(--white);
-  --text: var(--ink);
-  --muted: var(--grey-2);
-  --faint: var(--grey-3);
-  --accent: var(--terracotta);
-  --border: var(--line);
-  --placeholder-bg: var(--line);
-  --nav-scrolled: rgb(245 241 232 / 0.9);
+  --bg: #faf8f4;
+  --bg-2: #ffffff;
+  --text: #16181c;
+  --muted: #5e5c55;
+  --line: #16181c;
+  --accent: #9a5b36;
+  --grid: rgb(22 24 28 / 0.08);
+  --nav-scrolled: rgb(250 248 244 / 0.92);
+  --placeholder: #ece8e0;
 
-  /* Blocs inversés (section Technologie, menu, pied de page) */
-  --inverse-bg: var(--ink);
-  --inverse-text: var(--ivory);
-  --inverse-muted: #b9b3a6;
-  --inverse-accent: var(--terracotta-light);
-  --inverse-border: #34373d;
+  /* Blocs inversés (section Technologie) */
+  --inv-bg: #16181c;
+  --inv-text: #f2efe9;
+  --inv-muted: #9b968c;
+  --inv-accent: #c98a5e;
 
   /* Typographie */
-  --font-display: 'Fraunces', 'Fraunces Fallback', Georgia, 'Times New Roman', serif;
-  --font-body: 'Archivo', 'Helvetica Neue', Helvetica, sans-serif;
-  --font-mono: 'Space Mono', 'Courier New', monospace;
+  --font-display: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 
-  /* Espacements */
-  --gutter: clamp(16px, 5vw, 56px);
-  --max: 1360px;
-  --section-space: clamp(72px, 13vw, 176px);
-  --nav-h: 64px;
-  --cut: 22px;
-  --cut-sm: 18px;
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --fs-hero: clamp(3.2rem, 11vw, 11rem);
+  --fs-title: clamp(2.2rem, 6.5vw, 5.5rem);
+  --fs-sub: clamp(1.25rem, 2.2vw, 1.75rem);
+  --fs-body: 1.0625rem;
+  --fs-meta: 0.6875rem;
+
+  /* Espace : le budget principal */
+  --margin: clamp(1.5rem, 6vw, 7rem);
+  --space: clamp(7rem, 14vw, 13rem);
+  --gap: clamp(1rem, 2vw, 1.5rem);
+  --nav-h: 72px;
+
+  /* Le trait */
+  --stroke: 2px;
+  --radius: 20px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     color-scheme: dark;
-    --bg: var(--ink);
-    --surface: #1f2227;
-    --text: var(--ivory);
-    --muted: #b9b3a6;
-    --faint: var(--grey-3);
-    --accent: var(--terracotta-light);
-    --border: #34373d;
-    --placeholder-bg: #2a2d33;
-    --nav-scrolled: rgb(22 24 28 / 0.9);
-
-    --inverse-bg: var(--ivory);
-    --inverse-text: var(--ink);
-    --inverse-muted: var(--grey-2);
-    --inverse-accent: var(--terracotta);
-    --inverse-border: var(--line);
+    --bg: #0d0e10;
+    --bg-2: #16181c;
+    --text: #f2efe9;
+    --muted: #9b968c;
+    --line: #f2efe9;
+    --accent: #c98a5e;
+    --grid: rgb(242 239 233 / 0.08);
+    --nav-scrolled: rgb(13 14 16 / 0.92);
+    --placeholder: #1f2226;
+    --inv-bg: #f2efe9;
+    --inv-text: #16181c;
+    --inv-muted: #5e5c55;
+    --inv-accent: #9a5b36;
   }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0d0e10;
+  --bg-2: #16181c;
+  --text: #f2efe9;
+  --muted: #9b968c;
+  --line: #f2efe9;
+  --accent: #c98a5e;
+  --grid: rgb(242 239 233 / 0.08);
+  --nav-scrolled: rgb(13 14 16 / 0.92);
+  --placeholder: #1f2226;
+  --inv-bg: #f2efe9;
+  --inv-text: #16181c;
+  --inv-muted: #5e5c55;
+  --inv-accent: #9a5b36;
 }

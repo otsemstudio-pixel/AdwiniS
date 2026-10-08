@@ -1,18 +1,19 @@
 # Adwini Studio — site officiel
 
-Site vitrine bilingue (FR / EN) d'Adwini Studio, Kigali. React + Vite + TypeScript, **100 % statique** : aucun backend, aucune base de données. Le HTML est prérendu au build, donc le contenu s'affiche avant le chargement du JavaScript.
+Site vitrine bilingue (FR / EN) d'Adwini Studio, Kigali. React + Vite + TypeScript, **100 % statique** : aucun backend, aucune base de données. Le HTML est prérendu au build : le contenu s'affiche avant le chargement du JavaScript.
 
-**En ligne :** https://otsemstudio-pixel.github.io/AdwiniS/ — publié automatiquement par GitHub Actions (`.github/workflows/deploy.yml`) à chaque push sur `main`.
+**En ligne :** https://otsemstudio-pixel.github.io/AdwiniS/. Le site est publié automatiquement par GitHub Actions (`.github/workflows/deploy.yml`) à chaque push sur `main`.
 
 ```bash
 npm install
 npm run dev       # développement sur http://localhost:5173/AdwiniS/
 npm run build     # build de production → dist/ (à déployer tel quel)
+npm run preview   # sert dist/ sur http://localhost:4173/AdwiniS/
 npm run check     # vérifications avant livraison (après un build)
-npm run assets    # régénère l'image de partage et les icônes PNG
+npm run assets    # régénère l'image de partage, le favicon et les icônes PNG
 ```
 
-`npm run check` et `npm run assets` utilisent Chrome ou Edge installé sur la machine (sinon, définir `CHROME_PATH`).
+`npm run check` et `npm run assets` utilisent Chrome ou Edge installé sur la machine. Sinon, définir `CHROME_PATH`.
 
 ---
 
@@ -27,114 +28,143 @@ Tout le contenu se trouve dans `src/data/`.
 | Un prix fixe (« à partir de ») | `src/data/site.ts` → `fixedPricing` |
 | Le numéro WhatsApp, l'e-mail, les réseaux, l'URL du site | `src/data/site.ts` → `site` |
 | Les projets (concepts) | `content.*.ts` → `work.projects` |
+| Le logo (symbole et wordmark) | `src/data/brand.ts` et `src/data/brand.wordmark.ts` |
 | La structure commune des deux langues | `src/data/types.ts` |
 
-**Les deux langues doivent garder la même structure.** Si une clé manque dans l'un des deux fichiers, `npm run build` échoue et indique laquelle. Les textes anglais sont rédigés comme des textes originaux, pas traduits mot à mot : gardez cette règle.
+**Les deux langues doivent garder la même structure.** Si une clé manque dans l'un des deux fichiers, `npm run build` échoue et indique laquelle. Les textes anglais sont rédigés comme des originaux : gardez cette règle.
 
-Les prix sont des nombres (`1200`), et le format est appliqué automatiquement selon la langue : « 1 200 $ » en français, « $1,200 » en anglais. Mettre `price: null` affiche le texte `priceNote` de la formule (« Sur devis »).
+Les prix sont des nombres (`1200`), et le format est appliqué selon la langue : « 1 200 $ » en français, « $1,200 » en anglais. Avec `price: null`, la formule affiche son texte `priceNote` (« Sur devis »).
 
 ### Emplacements à remplir avant la mise en ligne
 
-Toute information manquante est un emplacement explicite entre crochets. Pour tous les retrouver :
+Toute information manquante est un emplacement explicite entre crochets :
 
-```bash
-grep -rn "\[" src/data/site.ts index.html
-```
+- dans `src/data/site.ts` :
+  - `[NUMÉRO WHATSAPP]` : chiffres uniquement, format international sans « + » (ex. `250788123456`) ;
+  - `[EMAIL]` ;
+  - `[LIEN INSTAGRAM]`, `[LIEN LINKEDIN]`, `[LIEN BEHANCE]` ;
+- dans `index.html` : `[@COMPTE X]` ;
+- `[IMAGE PROJET 01]` à `03` : voir plus bas ;
+- **`[LOGO-MARK.SVG]`** : voir la section suivante.
 
-- `[NUMÉRO WHATSAPP]` : chiffres uniquement, format international sans « + » (ex. `250788123456`)
-- `[EMAIL]`, `[LIEN INSTAGRAM]`, `[LIEN LINKEDIN]`, `[LIEN BEHANCE]`
-- `[@COMPTE X]` : dans `index.html`
+### Remplacer le logo provisoire — `[LOGO-MARK.SVG]`
 
-### Passer à un domaine personnalisé
+Le symbole (une main en trait continu et trois éclats) et le wordmark sont **provisoires**. Pour brancher les fichiers officiels :
 
-Une fois le domaine acheté :
-1. dans `vite.config.ts`, remettre `base: '/'` ;
-2. créer `public/CNAME` contenant le domaine (ex. `www.adwinistudio.com`) ;
-3. remplacer `https://otsemstudio-pixel.github.io/AdwiniS/` dans `index.html` et `src/data/site.ts` ;
-4. dans `scripts/check.mjs`, remettre `const base = 'http://localhost:4173/'` ;
-5. chez le registraire, créer un enregistrement CNAME : `www` → `otsemstudio-pixel.github.io` ;
-6. dans Settings → Pages, saisir le domaine, puis cocher « Enforce HTTPS ».
+1. **Symbole** : dans `src/data/brand.ts`, collez les attributs `d` des tracés.
+   - Le trait continu va dans `strokes`, les trois éclats dans `sparks`.
+   - Ajustez aussi `viewBox` et `strokeWidth`.
+   - Les tracés doivent être des **traits** (`stroke`), pas des aplats : le site les colore en `currentColor`, les dessine au chargement et réutilise les éclats comme marqueur d'accent.
+2. **Wordmark** : dans `src/data/brand.wordmark.ts`, remplacez les tracés `d` (version en ligne et version empilée) et leurs dimensions. Le wordmark reste un tracé figé, jamais du texte.
+3. Lancez `npm run assets` : l'image de partage, le favicon et les icônes sont régénérés à partir de ces tracés.
+
+`scripts/outline-wordmark.mjs` a servi à produire le wordmark provisoire. Il peut être supprimé ensuite, avec la dépendance `opentype.js`.
 
 ### Ajouter les vrais visuels des projets
 
-Les emplacements `[IMAGE PROJET 01]` à `03` sont rendus par `src/sections/Works.tsx` et `src/components/ProjectPanel.tsx` (classe `.placeholder`). Pour chaque image :
+Les emplacements `[IMAGE PROJET 0X]` sont rendus par `src/sections/Works.tsx` et `src/components/ProjectPanel.tsx` (classe `.placeholder`). Pour chaque image :
 
 - format WebP, avec `loading="lazy"` ;
 - un `srcset` responsive ;
 - des `width` et `height` explicites ;
 - un `alt` descriptif.
 
-### Ajouter un projet
+Gardez la classe `wipe` et l'attribut `data-reveal` : le volet encre continuera de découvrir l'image.
 
-Ajoutez une entrée dans `work.projects` des deux fichiers de contenu, avec un code `PRJ—004` (trois lettres, tiret long, trois chiffres). La mise en page bureau prévoit trois cartes : au-delà, ajustez `.works__grid` dans `src/styles/sections.css`.
+### Passer à un domaine personnalisé
+
+Une fois le domaine acheté :
+
+1. Dans `vite.config.ts`, remettez `base: '/'`.
+2. Créez `public/CNAME` contenant le domaine (ex. `www.adwinistudio.com`).
+3. Remplacez `https://otsemstudio-pixel.github.io/AdwiniS/` dans `index.html` et `src/data/site.ts`.
+4. Dans `scripts/check.mjs`, remettez `const base = 'http://localhost:4173/'` et adaptez le motif `AdwiniS` du calcul de poids.
+5. Chez le registraire, créez un enregistrement CNAME : `www` → `otsemstudio-pixel.github.io`.
+6. Dans Settings → Pages, saisissez le domaine, puis cochez « Enforce HTTPS ».
 
 ---
+
+## Direction visuelle — où elle vit dans le code
+
+- **Échelle** (`src/styles/tokens.css`) : titres du hero et de section, sous-titre, corps et métadonnées suivent exactement les `clamp()` du brief.
+  - Le titre du hero a un garde-fou de largeur : le mot le plus long tient toujours à l'écran, 320 px compris, en français comme en anglais.
+- **Espace** : `--space` fixe l'espace entre sections, `--margin` les marges latérales.
+- **Grille asymétrique** : 12 colonnes à partir de 1440 px, avec des placements décalés section par section.
+  - En dessous, des retraits variables remplacent les colonnes.
+  - Les filets de la grille sont visibles dans le hero et la philosophie (`GridLines`).
+- **Le trait** : les séparateurs, contours de cartes, boutons capsule et numéros cerclés font 2 px, avec extrémités arrondies.
+  - Le fil continu de la marge gauche (`Thread`) se dessine par paliers, au changement de section.
+  - Les illustrations des pôles sont chacune **un seul tracé** (`LineArt`).
+- **Révélations, jamais de fondu** (`components.css`, `useRevealAll`) :
+  - mots qui montent sous un masque, avec 40 ms d'écart ;
+  - blocs dont le masque s'ouvre ;
+  - volet encre sur les images ;
+  - tracés qui se dessinent.
+
+  Un seul `IntersectionObserver` (seuil 0,15, une fois par élément) gère l'ensemble. Le titre du hero se révèle en CSS pur, sans attendre le JavaScript.
+- **Tracé du logo** : 900 ms, puis les éclats, une fois par session (classe `intro` posée par le script de `index.html`).
+- **Grain** : texture `feTurbulence` d'environ 300 octets, en position fixe, opacité 0,025.
+- **Accent terre cuite** :
+  - les éclats, utilisés quatre fois : hero, formule mise en avant, engagement n° 5, pied de page ;
+  - le contour de la formule mise en avant ;
+  - le survol des cartes projet ;
+  - « N'nahssé ».
+
+  Jamais plus d'un élément à l'écran à la fois.
+
+Il n'y a aucun `requestAnimationFrame` dans le code. L'hydratation de React attend `requestIdleCallback`, pour ne pas retarder le premier affichage.
 
 ## Architecture
 
 ```
 src/
-  data/        contenus FR/EN, prix, coordonnées, types partagés
-  sections/    une section de page par fichier (Hero, Subscription, CardMaker…)
-  components/  briques réutilisables (Logo, Section, Nav, MobileMenu, BusinessCard…)
-  hooks/       langue (useLanguage), apparition au défilement, état de défilement
+  data/        contenus FR/EN, prix, coordonnées, tracés de la marque, types
+  sections/    une section par fichier (Hero, Poles, Subscription, CardMaker…)
+  components/  briques du système (Logo, Section, RevealText, Thread, LineArt, BusinessCard…)
+  hooks/       langue, thème, révélations, section active, défilement
   utils/       formatage, vCard, QR code, export PNG
-  styles/      tokens.css (palette, mode sombre), base, composants, sections
+  styles/      tokens (palette, échelle, clair/sombre), base, composants, sections
 scripts/
-  prerender.mjs      injecte le HTML FR + EN prérendu dans dist/index.html
-  export-assets.mjs  génère og-image.png et les icônes à partir de SVG
-  check.mjs          vérifications automatiques (voir plus bas)
+  prerender.mjs        injecte le HTML FR + EN prérendu dans dist/index.html
+  export-assets.mjs    image de partage et icônes, à partir des tracés de la marque
+  outline-wordmark.mjs outil ponctuel du wordmark provisoire
+  check.mjs            vérifications automatiques
 ```
 
-L'ordre des sections et leur numéro (`01 / PHILOSOPHIE`…) sont définis dans la liste `SECTIONS` de `src/App.tsx`.
+L'ordre des 13 sections est défini dans `SECTIONS` de `src/App.tsx`. Il alimente les numéros cerclés, le compteur « 02 / 13 » et le fil.
 
-### Langue
+## Performance (mesurée)
 
-Un petit script dans `index.html` choisit la langue avant le premier affichage, dans cet ordre : choix mémorisé (`localStorage`), langue du navigateur, sinon le français. Les deux versions sont prérendues, donc aucune langue ne s'affiche brièvement avant l'autre. L'attribut `lang`, le titre, la description et les balises Open Graph suivent chaque changement de langue.
-
-### Carte de visite numérique
-
-Tout est généré dans le navigateur et rien n'est envoyé.
-
-- **Aperçu** : SVG mis à jour pendant la saisie.
-- **Export PNG** : SVG converti via canvas, polices incorporées.
-- **Contact** : fichier `.vcf` (vCard 3.0).
-- **QR code** : encode la vCard, généré par `uqr` (≈ 4 Ko, chargé à la demande).
-- **Lien de partage** : contient les champs dans l'adresse (`#carte?n=…`) et reconstruit la carte à l'ouverture.
-
----
-
-## Choix de performance (mesurés)
-
-- **JS initial : ≈ 62 Ko compressés** (budget : 150 Ko). Le QR code et l'export PNG sont chargés à la demande.
-- **Premier affichage ≈ 1,1 s** sur 3G simulée (1,6 Mb/s, 150 ms de latence, CPU ×4), médiane de 3 chargements à froid.
-- **Prérendu statique** : sans lui, l'affichage attendait le JS (≈ 3,3 s).
-- **Hydratation après le premier affichage** : React ne retarde pas la première image sur un téléphone lent.
-- **Polices non préchargées** : mesuré, le préchargement retardait le premier affichage d'environ 1 s. Elles arrivent en `font-display: swap`. Un repli Georgia aux métriques ajustées (`size-adjust`) limite le décalage quand Fraunces s'affiche.
-- **Polices auto-hébergées, sous-ensemble latin uniquement** (`@fontsource`).
+- **JS initial : 66,4 Ko compressés** (budget : 150 Ko). CSS : 7,3 Ko. QR code (4 Ko) et export PNG (1 Ko) sont chargés à la demande.
+- **Contenu utile en ≈ 1,1 s** sur 3G simulée (1,6 Mb/s, 150 ms de latence, CPU ×4), médiane de 3 chargements à froid.
+- **Polices** : auto-hébergées, sous-ensemble latin, `font-display: swap`.
+  - Seule la police de titre (Outfit 600) est préchargée : mesuré, aucun retard du premier affichage.
+  - Corps : Archivo 400/500/600. Métadonnées : JetBrains Mono 400.
 
 ## Accessibilité et contrastes
 
-| Couleurs | Ratio | Usage |
-|---|---|---|
-| Terre cuite `#9A5B36` sur ivoire | 4,75:1 | conforme au texte courant, couleur conservée |
-| Texte tertiaire `#8C877C` sur ivoire | 3,17:1 | décor et texte ≥ 24 px uniquement en mode clair ; les métadonnées utilisent le texte secondaire (5,94:1) |
+| Couleurs | Ratio |
+|---|---|
+| Terre cuite `#9A5B36` sur `#FAF8F4` | 5,05:1, aucune correction nécessaire |
+| Texte secondaire `#5E5C55` sur `#FAF8F4` | 6,29:1 |
+| Texte secondaire sombre `#9B968C` sur `#0D0E10` | 6,98:1 |
 
-L'ensemble des contrastes est vérifié par `npm run check`.
+Tous les couples de couleurs sont vérifiés par `npm run check`.
 
 ## Ce que vérifie `npm run check`
 
 - poids du bundle ;
 - contrastes ;
-- absence de défilement horizontal à 320, 375, 768 et 1440 px ;
+- absence de défilement horizontal à 320, 375, 768, 1440 et 1920 px ;
 - zones tactiles d'au moins 44 px ;
-- hiérarchie des titres, un seul `h1`, labels des champs ;
+- titres (un seul `h1`, hiérarchie) et labels des champs ;
 - navigation au clavier et focus visible ;
 - menu mobile ;
 - panneau projet ;
-- changement et mémorisation de la langue ;
-- `prefers-reduced-motion` et mode sombre ;
-- carte : aperçu, PNG, vCard, repli de partage, lien partagé ;
-- temps d'affichage sur 3G simulée.
+- langue (détection, bascule, mémorisation) ;
+- `prefers-reduced-motion` ;
+- mode sombre (système et bascule manuelle) ;
+- carte : aperçu en direct, PNG, vCard, repli de partage, lien partagé ;
+- affichage sur 3G simulée.
 
 Les captures d'écran sont écrites dans `.check/`.
