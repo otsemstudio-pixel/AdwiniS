@@ -119,15 +119,24 @@ for (let i = 0; i < 50; i++) {
 }
 const browser = await puppeteer.launch({ executablePath: findChrome() });
 
-async function newPage({ width = 1440, height = 900, lang = 'fr-FR', media = [{ name: 'prefers-color-scheme', value: 'light' }] } = {}) {
+async function newPage({ width = 1440, height = 900, lang = 'fr-FR', media = [{ name: 'prefers-color-scheme', value: 'light' }], opening = false } = {}) {
   const context = await browser.createBrowserContext();
   const page = await context.newPage();
-  page.on('pageerror', (err) => ok(false, 'Erreur JS', err.message));
+  // « panne simulée » est l'erreur provoquée volontairement pour prouver le garde-fou de l'ouverture.
+  page.on('pageerror', (err) => !/panne simulée/.test(err.message) && ok(false, 'Erreur JS', err.message));
   // Une erreur d'hydratation (prérendu ≠ rendu client) apparaît en console.
   page.on('console', (msg) => {
     if (msg.type() === 'error' && !/favicon|Failed to load resource/.test(msg.text())) ok(false, 'Erreur console', msg.text().slice(0, 160));
   });
   await page.setExtraHTTPHeaders({ 'Accept-Language': lang });
+  if (!opening)
+    await page.evaluateOnNewDocument(() => {
+      try {
+        sessionStorage.setItem('adwini-vu', '1');
+      } catch {
+        /* page vierge initiale : pas de stockage, sans importance */
+      }
+    });
   await page.evaluateOnNewDocument((l) => {
     Object.defineProperty(navigator, 'language', { get: () => l });
     Object.defineProperty(navigator, 'languages', { get: () => [l] });
@@ -201,6 +210,81 @@ for (const [width, zoom, lang] of [[320, 1, 'fr-FR'], [360, 1, 'en-US'], [375, 1
     ok(issues.length === 0, `${path || 'accueil'} ${width} px ${lang.slice(0, 2)}${zoom !== 1 ? ' texte 125 %' : ''}`, issues.slice(0, 3).join(' ; '));
     await context.close();
   }
+}
+
+section('Séquence d’ouverture');
+{
+  // Sans JavaScript : jamais d'écran noir, le site directement.
+  const nojs = await newPage({ opening: true });
+  await nojs.page.setJavaScriptEnabled(false);
+  await nojs.page.goto(base, { waitUntil: 'load' });
+  ok(await nojs.page.evaluate(() => getComputedStyle(document.querySelector('.ouverture-calque')).display === 'none'), 'Sans JavaScript : calque masqué, site affiché');
+  await nojs.context.close();
+
+  // Séquence complète : durée réelle, chevauchement avec le titre, pas de rejeu, premier Tab.
+  const { page, context } = await newPage({ opening: true });
+  await page.evaluateOnNewDocument(() => {
+    window.__anim = [];
+    const rec = (e) => window.__anim.push([e.type, e.animationName, performance.now()]);
+    document.addEventListener('animationstart', rec, true);
+    document.addEventListener('animationend', rec, true);
+  });
+  await page.goto(base, { waitUntil: 'domcontentloaded' });
+  ok(await page.evaluate(() => document.documentElement.classList.contains('ouverture')), 'Première visite : séquence jouée');
+  await new Promise((r) => setTimeout(r, 2800));
+  const t = await page.evaluate(() => {
+    const at = (type, name) => window.__anim.find(([ty, n]) => ty === type && n === name)?.[2];
+    const paint = performance.getEntriesByName('first-paint')[0]?.startTime ?? 0;
+    return { paint, lifted: at('animationend', 'ouverture-lever'), word: at('animationstart', 'rise'), vu: sessionStorage.getItem('adwini-vu') };
+  });
+  const total = Math.round(t.lifted - t.paint);
+  ok(total <= 1450, 'Durée réelle ≤ 1 400 ms (± une image)', `${total} ms de la première peinture au calque levé`);
+  ok(t.word < t.lifted, 'Le titre monte avant que le calque ait fini de se lever', `chevauchement ${Math.round(t.lifted - t.word)} ms`);
+  ok(t.vu === '1' && !(await page.evaluate(() => document.documentElement.classList.contains('ouverture'))), 'Calque retiré, séquence mémorisée pour la session');
+  await page.keyboard.press('Tab');
+  ok((await page.evaluate(() => document.activeElement.className)) === 'skip-link', 'Premier Tab : le lien d’évitement, jamais le calque');
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  ok(!(await page.evaluate(() => document.documentElement.classList.contains('ouverture'))), 'Rechargement : pas de rejeu');
+  await context.close();
+
+  // Garde-fou : la fin normale échoue, le site est quand même libéré à 2 500 ms.
+  const g = await newPage({ opening: true });
+  await g.page.evaluateOnNewDocument(() => {
+    const original = DOMTokenList.prototype.remove;
+    let broken = false;
+    DOMTokenList.prototype.remove = function (...args) {
+      if (!broken && args.includes('ouverture')) {
+        broken = true;
+        throw new Error('panne simulée');
+      }
+      return original.apply(this, args);
+    };
+  });
+  await g.page.goto(base, { waitUntil: 'domcontentloaded' });
+  await new Promise((r) => setTimeout(r, 2800));
+  ok(await g.page.evaluate(() => !document.documentElement.classList.contains('ouverture') && !document.elementFromPoint(innerWidth / 2, innerHeight / 2).closest('.ouverture-calque')), 'Erreur dans la séquence : site accessible après 2 500 ms (garde-fou)');
+  await g.context.close();
+
+  // Entrée directe : mouvement réduit, économie de données, 2G.
+  for (const [label, setup] of [
+    ['Mouvement réduit', (p) => p.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }])],
+    ['Économie de données', (p) => p.evaluateOnNewDocument(() => Object.defineProperty(navigator, 'connection', { get: () => ({ saveData: true }) }))],
+    ['Connexion 2G', (p) => p.evaluateOnNewDocument(() => Object.defineProperty(navigator, 'connection', { get: () => ({ effectiveType: '2g' }) }))],
+  ]) {
+    const x = await newPage({ opening: true });
+    await setup(x.page);
+    await x.page.goto(base, { waitUntil: 'domcontentloaded' });
+    ok(!(await x.page.evaluate(() => document.documentElement.classList.contains('ouverture'))), `${label} : entrée directe`);
+    await x.context.close();
+  }
+
+  // Pages utilitaires : jamais d'ouverture.
+  const u = await newPage({ opening: true });
+  for (const path of ['carte/', 'brief/']) {
+    await u.page.goto(base + path, { waitUntil: 'domcontentloaded' });
+    ok(await u.page.evaluate(() => !document.querySelector('.ouverture-calque') && !document.documentElement.classList.contains('ouverture')), `/${path} : pas d’ouverture`);
+  }
+  await u.context.close();
 }
 
 /* 4. Structure ---------------------------------------------------------- */
@@ -634,8 +718,9 @@ for (const width of [375, 1440]) {
 section('3G simulée (1,6 Mb/s, 150 ms RTT, CPU ×4) — médiane de 3 chargements à froid');
 {
   const runs = [];
-  for (let i = 0; i < 3; i++) {
-    const { page, context } = await newPage({ width: 375, height: 740 });
+  // Essais alternés avec et sans ouverture : le LCP doit rester le même (le calque recouvre, il ne retarde rien).
+  for (let i = 0; i < 4; i++) {
+    const { page, context } = await newPage({ width: 375, height: 740, opening: i % 2 === 0 });
     const cdp = await page.createCDPSession();
     await cdp.send('Network.enable');
     await cdp.send('Network.emulateNetworkConditions', {
@@ -652,8 +737,11 @@ section('3G simulée (1,6 Mb/s, 150 ms RTT, CPU ×4) — médiane de 3 chargemen
       }).observe({ type: 'largest-contentful-paint', buffered: true });
     });
     await page.goto(base, { waitUntil: 'networkidle0', timeout: 60000 });
+    // Laisser l'ouverture se terminer : un LCP tardif (titre sous le calque) serait enregistré.
+    await new Promise((r) => setTimeout(r, 2800));
     runs.push(
       await page.evaluate(() => ({
+        played: document.documentElement.classList.contains('ouverture-jouee'),
         fcp: performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? 0,
         lcp: window.__lcp,
         interactive: performance.getEntriesByType('navigation')[0].domContentLoadedEventEnd,
@@ -664,7 +752,14 @@ section('3G simulée (1,6 Mb/s, 150 ms RTT, CPU ×4) — médiane de 3 chargemen
     await context.close();
   }
   const med = (k) => runs.map((r) => r[k]).sort((a, b) => a - b)[1];
+  const mean = (arr) => Math.round(arr.reduce((s, r) => s + r.lcp, 0) / arr.length);
+  const withOpening = runs.filter((r) => r.played);
+  const without = runs.filter((r) => !r.played);
   ok(med('lcp') < 2000, 'Contenu utile (LCP) < 2 s', `FCP ${Math.round(med('fcp'))} ms, LCP ${Math.round(med('lcp'))} ms (essais : ${runs.map((r) => Math.round(r.lcp)).join(' / ')} ms)`);
+  if (withOpening.length && without.length) {
+    const gap = mean(withOpening) - mean(without);
+    ok(Math.abs(gap) < 250, 'L’ouverture ne retarde pas le LCP (écart dans le bruit de mesure)', `avec ${mean(withOpening)} ms, sans ${mean(without)} ms, écart ${gap} ms`);
+  }
   console.log(`  DOMContentLoaded ${Math.round(med('interactive'))} ms — ${(med('bytes') / 1024).toFixed(0)} Ko transférés au total`);
 }
 

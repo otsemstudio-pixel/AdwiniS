@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { openingOverlay, openingScript, openingStyle } from './src/opening';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 
@@ -34,11 +35,32 @@ function preloadTitleFont(): Plugin {
   };
 }
 
+/**
+ * Séquence d'ouverture (voir src/opening.ts), injectée dans le HTML de la page d'accueil
+ * seulement : amorce et styles en tête de <head> (avant toute feuille de style), calque en tête
+ * de <body>. Les pages /carte, /card et /brief n'en ont pas.
+ */
+function openingSequence(): Plugin {
+  return {
+    name: 'adwini:opening',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html, ctx) {
+        // Accueil uniquement (« /index.html ») : pas « /carte/index.html » ni les autres.
+        if (ctx.path.replace(/^\/+/, '') !== 'index.html') return html;
+        return html
+          .replace('<head>', `<head>\n    ${openingScript}\n    ${openingStyle}`)
+          .replace('<body>', `<body>\n    ${openingOverlay()}`);
+      },
+    },
+  };
+}
+
 export default defineConfig({
   // Site publié sur https://otsemstudio-pixel.github.io/AdwiniS/ : tous les chemins partent de ce sous-dossier.
   // Avec un domaine personnalisé, remettre base: '/'.
   base: '/AdwiniS/',
-  plugins: [react(), preloadTitleFont()],
+  plugins: [react(), preloadTitleFont(), openingSequence()],
   build: {
     target: 'es2019',
     // Site principal + pages autonomes (non liées, non indexées) : /carte, /card, /brief.

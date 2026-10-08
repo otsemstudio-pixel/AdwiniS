@@ -73,12 +73,7 @@
           var t = localStorage.getItem('adwini-theme');
           if (t === 'light' || t === 'dark') h.setAttribute('data-theme', t);
         } catch (e) {}
-        try {
-          if (!sessionStorage.getItem('adwini-intro')) {
-            h.className += ' intro';
-            sessionStorage.setItem('adwini-intro', '1');
-          }
-        } catch (e) {}
+        // Le tracé du logo à la première visite est joué par la séquence d'ouverture (src/opening.ts).
         // Secours : si l'application n'a pas démarré après 8 s, tout le contenu s'affiche.
         setTimeout(function () {
           if ((' ' + h.className + ' ').indexOf(' app ') < 0) h.className += ' no-reveal';

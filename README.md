@@ -113,6 +113,29 @@ Une fois le domaine acheté :
 
 Il n'y a aucun `requestAnimationFrame` dans le code. L'hydratation de React attend `requestIdleCallback`, pour ne pas retarder le premier affichage.
 
+## Séquence d'ouverture
+
+Code : `src/opening.ts`, injecté au build dans la page d'accueil par le plugin `openingSequence` de `vite.config.ts`.
+
+L'ouverture **ne retarde jamais le contenu, elle le recouvre**. Le HTML prérendu est déjà là ; un calque encre le couvre pendant environ 1 400 ms puis se lève.
+
+| Temps | Séquence |
+|---|---|
+| 0 ms | fond encre |
+| 60 → 760 ms | le trait du logo se trace (`pathLength="1"`) |
+| 700 → 900 ms | « ADWINI » se resserre (lettres en `translateX`, pas `letter-spacing`) et apparaît |
+| 900 → 1 400 ms | le calque se lève (`translateY(-100%)`), le logo monte 15 % plus vite |
+| dès 1 100 ms | le titre du hero monte mot par mot (40 ms d'écart), sous le calque qui se lève encore |
+
+**Les sécurités :**
+- **Calque masqué par défaut :** il ne s'affiche que sous la classe `ouverture`, posée par l'amorce en tête de `<head>`. Sans JavaScript ou en cas d'erreur, on voit directement le site.
+- **Séquence sautée** si elle a déjà été vue dans la session (`sessionStorage`), en mouvement réduit, en économie de données ou en connexion 2G.
+- **Garde-fou :** la classe est retirée à 2 500 ms quoi qu'il arrive. Sur une connexion très lente (première peinture après 2,5 s), l'ouverture ne joue donc pas.
+- **Calque inerte** (`aria-hidden`, `inert`) : le premier `Tab` atteint le lien d'évitement.
+- **Pas d'ouverture** sur `/carte`, `/card` ni `/brief`.
+
+Poids ajouté à la page d'accueil : **1 257 octets compressés (gzip)**, dont environ 550 octets de JavaScript, 670 de CSS et 1 270 de calque une fois isolés.
+
 ## Carte du fondateur et carte de brief
 
 ### Carte du fondateur — `/carte` (français) et `/card` (anglais)
