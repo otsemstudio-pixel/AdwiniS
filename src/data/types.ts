@@ -94,6 +94,19 @@ export interface Content {
     cta: string;
   };
   fixed: SectionHead & { intro: string; from: string; offers: FixedOffer[] };
+  /** Réalisations : la série d'affiches (fichiers dans data/posters.ts, même ordre). */
+  posters: SectionHead & {
+    intro: string;
+    series: string;
+    hint: string;
+    open: string;
+    close: string;
+    prev: string;
+    next: string;
+    message: string;
+    design: string;
+    items: { title: string; theme: string; description: string; design: string; alt: string }[];
+  };
   work: SectionHead & {
     intro: string;
     tag: string;

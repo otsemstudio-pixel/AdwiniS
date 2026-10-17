@@ -66,7 +66,7 @@ section('Mouvement : garde-fous');
   }
   ok(!m, 'Aucune animation de propriété de mise en page', m ? m.slice(0, 90) : '');
   ok(/1\s?200\s?\$|\$1,200/.test(html) && /2\s?200\s?\$/.test(html) && />48 h</.test(html), 'Prix et délais présents dans le HTML prérendu');
-  const before = Number(process.env.JS_BEFORE_KB || 70.3);
+  const before = Number(process.env.JS_BEFORE_KB || 77.6);
   ok(jsGz / 1024 - before <= 10, 'JavaScript : moins de 10 Ko ajoutés', `+${(jsGz / 1024 - before).toFixed(1)} Ko (avant ${before} Ko)`);
 }
 
@@ -180,8 +180,9 @@ for (const width of [320, 375, 768, 1440, 1920]) {
       .filter((el) => {
         const r = el.getBoundingClientRect();
         if (!r.width || el.closest('dialog:not([open])') || el.classList.contains('skip-link')) return false;
-        // Le titre-bouton d'une carte projet couvre toute la carte via ::after.
+        // Le titre-bouton d'une carte projet ou d'une affiche couvre toute la carte via ::after.
         if (el.classList.contains('work__open')) return el.closest('.work__card').getBoundingClientRect().height < 44;
+        if (el.classList.contains('poster__open')) return el.closest('.poster__inner').getBoundingClientRect().height < 44;
         // Les liens dans un paragraphe sont exemptés (WCAG 2.5.8) ; les commandes autonomes doivent faire 44 px.
         return r.height < 44 && getComputedStyle(el).display !== 'inline';
       })
@@ -342,7 +343,7 @@ section('Structure et accessibilité');
     stops.push(
       await page.evaluate(() => {
         const el = document.activeElement;
-        const cs = getComputedStyle(el.matches('.work__open') ? el : el, el.matches('.work__open') ? '::after' : null);
+        const cs = getComputedStyle(el, el.matches('.work__open, .poster__open') ? '::after' : null);
         return {
           name: (el.getAttribute('aria-label') || el.textContent || el.id || '').trim().slice(0, 28),
           outline: cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2,

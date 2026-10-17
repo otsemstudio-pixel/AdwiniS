@@ -155,6 +155,89 @@ const en: Content = {
       },
     ],
   },
+  posters: {
+    label: 'Selected work',
+    title: 'Hard truths, given form.',
+    intro:
+      'A series of social media posters on entrepreneurship. One message per poster, one composition per message: each visual is built to be understood in a second and remembered for a long time.',
+    series: '“Understand, Become, Build” series',
+    hint: 'Scroll to move through the series',
+    open: 'View poster',
+    close: 'Close',
+    prev: 'Previous poster',
+    next: 'Next poster',
+    message: 'The message',
+    design: 'The design choice',
+    items: [
+      {
+        title: 'More money can make a bad decision move faster',
+        theme: 'Capital',
+        description: 'Raising money doesn’t fix a strategy: capital amplifies what is already there, good or bad.',
+        design:
+          'A greyscale close-up of banknote engraving turns money into texture, almost threatening. Heavy condensed capitals, and a single gold accent on the line that holds the key.',
+        alt: 'Black and white close-up of banknote engraving, with the title in large white capitals and a gold line underneath.',
+      },
+      {
+        title: 'Your idea is not special',
+        theme: 'Execution',
+        description:
+          'Somebody, somewhere, already thought of it. What’s rare is executing it when it’s boring, when it’s hard, and when nobody is watching.',
+        design:
+          'A crowd in the background makes the line concrete: there are many of you. A gold serif headline, and the word “SPECIAL” fading from gold to black.',
+        alt: 'A black and white crowd covered by the title in large gold serif letters and a short white paragraph.',
+      },
+      {
+        title: 'A great idea is not enough',
+        theme: 'Foundations',
+        description:
+          'Dreaming comes naturally. Testing demand, protecting cash flow, keeping momentum and adapting when execution drifts from the plan — that’s where the real work is.',
+        design:
+          'Extruded letters set like the steps of a staircase: the sentence reads as you climb, the way you build. A bold blue and one block of copy for the argument.',
+        alt: 'The words “Great idea is not enough” in white extruded letters arranged as a staircase on a blue background, with a paragraph at the bottom right.',
+      },
+      {
+        title: 'Myth vs reality: business is not a shortcut',
+        theme: 'Myths',
+        description: 'Starting a business can lead to a better life, but it isn’t a shortcut — it’s a demanding path.',
+        design:
+          'A layout split in two, grey against yellow, myth facing reality. An arrow links them, and a thoughtful figure bridges both halves.',
+        alt: 'Poster split in two: “Myth” in grey on the left, “Reality” on yellow on the right, with a thoughtful man in the middle.',
+      },
+      {
+        title: 'Everyone loves your idea… Who is paying?',
+        theme: 'Validation',
+        description: 'Applause is not market validation. Only a paying customer validates an idea.',
+        design:
+          'A serving cloche lifted over an empty plate: the promise is served, the dish doesn’t exist yet. Lots of white space, and the question in gold where the food should be.',
+        alt: 'Two black hands lift a serving cloche over an empty plate, with the question “Who is paying?” in gold.',
+      },
+      {
+        title: 'The market does not read your CV',
+        theme: 'Market',
+        description: 'The market responds to what you can understand, build and deliver — not to your degrees.',
+        design:
+          'A man wincing as he reads a sheet of paper, on a calm light blue. A heavy headline with an offset shadow, and one word in red: “CV”.',
+        alt: 'A man wincing while reading a sheet of paper on a light blue background, under the title “The market does not read your CV”.',
+      },
+      {
+        title: 'You can be brilliant and still fail',
+        theme: 'Uncertainty',
+        description:
+          'Intelligence doesn’t remove uncertainty. Knowing when your existing knowledge is no longer enough is an entrepreneurial skill in itself.',
+        design:
+          'A large tilted blue plane held back by a woman pulling with all her weight: the effort shows. The title follows the slope, and a brain-bulb recalls what isn’t enough.',
+        alt: 'A woman holds back a large tilted blue panel bearing the title “You can be brilliant and still fail”, with a light bulb containing a brain.',
+      },
+      {
+        title: 'The loneliness of deciding',
+        theme: 'Decision',
+        description: 'Some choices affect everyone and still land on one person.',
+        design:
+          'A backlit silhouette, head in hands, on the left; on the right, the title stacked word by word, right-aligned like a column. Gold only arrives at the very end.',
+        alt: 'Silhouette of a seated man with his head in his hands on a white background, with the title stacked on the right in black capitals.',
+      },
+    ],
+  },
   work: {
     label: 'Work',
     title: 'Studio concepts.',

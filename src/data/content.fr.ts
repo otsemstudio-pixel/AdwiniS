@@ -157,6 +157,91 @@ const fr: Content = {
       },
     ],
   },
+  posters: {
+    label: 'Réalisations',
+    title: 'Des vérités dures, mises en forme.',
+    intro:
+      'Une série d’affiches pour les réseaux sociaux sur l’entrepreneuriat. Un message par affiche, une composition par message : chaque visuel est construit pour être compris en une seconde et retenu longtemps.',
+    series: 'Série « Understand, Become, Build »',
+    hint: 'Faites défiler pour parcourir la série',
+    open: 'Voir l’affiche',
+    close: 'Fermer',
+    prev: 'Affiche précédente',
+    next: 'Affiche suivante',
+    message: 'Le message',
+    design: 'Le parti pris',
+    items: [
+      {
+        title: 'Plus d’argent peut accélérer une mauvaise décision',
+        theme: 'Capital',
+        description:
+          'Lever des fonds ne corrige pas une stratégie : le capital amplifie ce qui est déjà là, le bon comme le mauvais.',
+        design:
+          'Gros plan sur la gravure d’un billet, en niveaux de gris : l’argent devient matière, presque menaçant. Capitales condensées massives, et un seul accent doré sur la phrase qui donne la clé.',
+        alt: 'Gros plan en noir et blanc sur la gravure d’un billet de banque, avec le titre en grandes capitales blanches et une phrase dorée en dessous.',
+      },
+      {
+        title: 'Votre idée n’est pas unique',
+        theme: 'Exécution',
+        description:
+          'Quelqu’un, quelque part, y a déjà pensé. Ce qui est rare, c’est l’exécution quand elle devient ennuyeuse, difficile, et que personne ne regarde.',
+        design:
+          'Une foule en arrière-plan, pour rendre la phrase concrète : vous êtes nombreux. Une capitale à empattements dorée, et le mot « SPECIAL » qui s’éteint de l’or vers le noir.',
+        alt: 'Une foule photographiée en noir et blanc, recouverte du titre en grandes lettres dorées à empattements et d’un court texte blanc.',
+      },
+      {
+        title: 'Une bonne idée ne suffit pas',
+        theme: 'Fondations',
+        description:
+          'Rêver vient naturellement. Valider la demande, protéger la trésorerie, tenir l’effort et s’adapter quand l’exécution s’écarte du plan : c’est là que se fait le vrai travail.',
+        design:
+          'Des lettres en volume, posées comme les marches d’un escalier : la phrase se lit en montant, comme on construit. Un bleu franc et un seul bloc de texte pour l’argument.',
+        alt: 'Les mots « Great idea is not enough » en lettres blanches en relief disposées en escalier sur fond bleu, avec un paragraphe en bas à droite.',
+      },
+      {
+        title: 'Mythe et réalité : l’entreprise n’est pas un raccourci',
+        theme: 'Idées reçues',
+        description:
+          'Entreprendre peut mener à une vie meilleure, mais ce n’est pas un raccourci : c’est un chemin exigeant.',
+        design:
+          'Une composition coupée en deux, gris contre jaune, le mythe face à la réalité. Une flèche les relie, et un personnage songeur fait le pont entre les deux moitiés.',
+        alt: 'Affiche divisée en deux : à gauche en gris « Mythe », à droite sur fond jaune « Réalité », avec un homme pensif au centre.',
+      },
+      {
+        title: 'Tout le monde aime votre idée… Qui paie ?',
+        theme: 'Validation',
+        description: 'Les applaudissements ne sont pas une validation du marché. Seul le client qui paie valide une idée.',
+        design:
+          'Une cloche de service soulevée au-dessus d’une assiette vide : la promesse est servie, le plat n’existe pas encore. Beaucoup de blanc, et la question en doré, à la place du plat.',
+        alt: 'Deux mains noires soulèvent une cloche de service au-dessus d’une assiette vide, avec la question « Who is paying ? » en doré.',
+      },
+      {
+        title: 'Le marché ne lit pas votre CV',
+        theme: 'Marché',
+        description: 'Le marché répond à ce que vous savez comprendre, construire et livrer, pas à vos diplômes.',
+        design:
+          'Un homme qui grimace en lisant une feuille, sur un bleu clair et calme. Le titre lourd, avec une ombre décalée, et un seul mot en rouge : « CV ».',
+        alt: 'Un homme qui grimace en lisant une feuille, sur fond bleu clair, sous le titre « The market does not read your CV ».',
+      },
+      {
+        title: 'On peut être brillant et échouer quand même',
+        theme: 'Incertitude',
+        description:
+          'L’intelligence n’élimine pas l’incertitude. Savoir reconnaître quand ses connaissances ne suffisent plus est une compétence d’entrepreneur à part entière.',
+        design:
+          'Un grand plan bleu incliné, retenu par une femme qui tire de tout son poids : l’effort se voit. Le titre suit la pente, et une ampoule-cerveau rappelle ce qui ne suffit pas.',
+        alt: 'Une femme retient un grand pan bleu incliné portant le titre « You can be brilliant and still fail », avec une ampoule contenant un cerveau.',
+      },
+      {
+        title: 'La solitude de celui qui décide',
+        theme: 'Décision',
+        description: 'Certains choix concernent tout le monde et reposent pourtant sur une seule personne.',
+        design:
+          'Une silhouette à contre-jour, tête dans les mains, à gauche ; à droite, le titre empilé mot à mot, aligné à droite comme une colonne. Le doré n’arrive qu’à la toute fin.',
+        alt: 'Silhouette d’un homme assis, la tête dans les mains, sur fond blanc, avec le titre empilé à droite en capitales noires.',
+      },
+    ],
+  },
   work: {
     label: 'Travaux',
     title: 'Concepts du studio.',

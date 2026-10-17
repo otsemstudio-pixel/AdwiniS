@@ -1,0 +1,650 @@
+/* ═══════════════════════════════════════════════════════════════════
+   RÉALISATIONS — la série d'affiches, et la visionneuse.
+   Par défaut (mobile, tablette, mouvement réduit, navigateurs sans
+   animations pilotées par le défilement) : une rangée qui se balaie au doigt.
+   Bureau : la section se fige et la série défile en carrousel 3D (plus bas).
+   ═══════════════════════════════════════════════════════════════════ */
+
+.posters__gallery {
+  margin-inline: calc(var(--margin) * -1);
+}
+
+.posters__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  padding-inline: var(--margin);
+  margin-bottom: 1.5rem;
+}
+
+.posters__giant,
+.posters__count,
+.posters__bar {
+  display: none;
+}
+
+.posters__track {
+  display: flex;
+  gap: clamp(1rem, 3vw, 2rem);
+  margin: 0;
+  padding: 0.5rem var(--margin) 1.5rem;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--margin);
+  scrollbar-width: thin;
+}
+
+.poster {
+  flex: 0 0 min(82vw, 440px);
+  scroll-snap-align: start;
+}
+
+.poster__inner {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.poster__frame {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--line);
+  transition: transform 0.6s var(--ease-out);
+}
+
+/* Inclinaison 3D seulement sous la souris : au repos, aucune couche 3D supplémentaire. */
+.poster__frame.is-pointed {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition-duration: 0.12s;
+}
+
+.poster__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.poster__line {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  margin: 0 0 0.6rem;
+}
+
+.poster__theme {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.poster__title {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+/* Le bouton s'étend à toute l'affiche : un clic n'importe où l'ouvre. */
+.poster__open {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.poster__open::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.poster__open:focus-visible {
+  outline: none;
+}
+
+.poster__open:focus-visible::after {
+  border-radius: var(--radius);
+  outline: var(--stroke) solid var(--accent);
+  outline-offset: 6px;
+}
+
+.poster__desc {
+  margin: 0;
+  color: var(--muted);
+  max-width: 44ch;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .poster__inner:hover .poster__img {
+    transform: scale(1.04);
+  }
+}
+
+/* ═══ Visionneuse ═══ */
+
+.viewer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--bg);
+  color: var(--text);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.viewer::backdrop {
+  background: #16181c;
+}
+
+.viewer__inner {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  min-height: 100%;
+  padding: clamp(1rem, 4vw, 3rem) var(--margin);
+}
+
+.viewer__media {
+  align-self: center;
+  justify-self: center;
+  width: min(100%, 82vh);
+}
+
+.viewer__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+.viewer__text {
+  align-self: center;
+  max-width: 34rem;
+}
+
+.viewer__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.viewer__title {
+  margin: 0 0 2rem;
+  font-size: clamp(1.75rem, 3.4vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.viewer__block {
+  padding-top: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-top: var(--stroke) solid var(--line);
+}
+
+.viewer__label {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.viewer__block p {
+  margin: 0;
+}
+
+.viewer__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+
+.viewer__nav .btn {
+  min-width: 56px;
+  font-size: 1.1rem;
+}
+
+@media (min-width: 1024px) {
+  .viewer__inner {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: center;
+    column-gap: clamp(2.5rem, 5vw, 6rem);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes viewer-media {
+    from {
+      opacity: 0;
+      transform: scale(0.92) rotate(-1.5deg);
+    }
+  }
+
+  @keyframes viewer-text {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+
+  .viewer__media {
+    animation: viewer-media 0.7s var(--ease-out) both;
+  }
+
+  .viewer__text {
+    animation: viewer-text 0.6s var(--ease-out) 0.12s both;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BUREAU — mise en scène (≥ 1024 px, mouvement autorisé, navigateurs
+   compatibles). Tout est piloté par le défilement, en CSS pur, sur
+   transform et opacity uniquement. Ailleurs, rien de tout ceci n'existe.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes posters-track {
+  to {
+    transform: translateX(calc((var(--n) - 1) * -1 * (var(--w) + var(--g))));
+  }
+}
+
+/* Chaque affiche arrive de droite tournée vers le centre, se redresse face à
+   l'écran, puis repart à gauche en tournant dans l'autre sens. */
+@keyframes poster-flow {
+  0% {
+    opacity: 0.35;
+    transform: perspective(1400px) translateZ(-260px) rotateY(48deg);
+  }
+  50% {
+    opacity: 1;
+    transform: perspective(1400px) translateZ(0) rotateY(0deg);
+  }
+  100% {
+    opacity: 0.35;
+    transform: perspective(1400px) translateZ(-260px) rotateY(-48deg);
+  }
+}
+
+@keyframes poster-zoom {
+  0%,
+  100% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+@keyframes poster-caption {
+  0%,
+  32% {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  46%,
+  54% {
+    opacity: 1;
+    transform: none;
+  }
+  68%,
+  100% {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+}
+
+@keyframes posters-giant {
+  from {
+    transform: translateX(8%);
+  }
+  to {
+    transform: translateX(-62%);
+  }
+}
+
+@keyframes posters-count {
+  to {
+    transform: translateY(calc((var(--n) - 1) * -1em));
+  }
+}
+
+@keyframes posters-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* La galerie est haute : pendant qu'on la traverse, la scène reste collée à l'écran. */
+    .posters__gallery {
+      --w: min(32vw, 56vh);
+      --g: 5vw;
+      height: calc(var(--n) * 55vh + 100vh);
+      view-timeline: --posters block;
+    }
+
+    .posters__stage {
+      position: sticky;
+      top: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr auto;
+      height: 100vh;
+      padding-top: calc(var(--nav-h) + 1rem);
+      overflow: hidden;
+    }
+
+    .posters__meta {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 0;
+    }
+
+    .posters__giant {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      display: block;
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 30vh;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--text);
+      opacity: 0.05;
+      translate: 0 -55%;
+      pointer-events: none;
+      animation: posters-giant linear both;
+      animation-timeline: --posters;
+      animation-range: contain 0% contain 100%;
+    }
+
+    .posters__count {
+      display: flex;
+      gap: 0.5em;
+      align-items: baseline;
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .posters__count-window {
+      display: block;
+      height: 1em;
+      overflow: hidden;
+    }
+
+    .posters__count-strip {
+      display: grid;
+      color: var(--accent);
+      animation: posters-count steps(8, jump-none) both;
+      animation-timeline: --posters;
+      animation-range: contain 0% contain 100%;
+    }
+
+    .posters__track {
+      align-items: center;
+      gap: var(--g);
+      padding: 0 calc(50% - var(--w) / 2);
+      overflow: visible;
+      scroll-snap-type: none;
+      animation: posters-track linear both;
+      animation-timeline: --posters;
+      animation-range: contain 0% contain 100%;
+    }
+
+    .poster {
+      flex: 0 0 var(--w);
+      animation: poster-flow linear both;
+      animation-timeline: --posters;
+      --from: calc((var(--i) - 1) * 100% / (var(--n) - 1));
+      --to: calc((var(--i) + 1) * 100% / (var(--n) - 1));
+      animation-range: contain var(--from) contain var(--to);
+    }
+
+    .poster__img {
+      animation: poster-zoom linear both;
+      animation-timeline: --posters;
+      animation-range: contain var(--from) contain var(--to);
+    }
+
+    .poster__caption {
+      position: absolute;
+      top: calc(100% + 1.5rem);
+      left: 0;
+      right: 0;
+      animation: poster-caption linear both;
+      animation-timeline: --posters;
+      animation-range: contain var(--from) contain var(--to);
+    }
+
+    .poster__inner {
+      gap: 0;
+    }
+
+    .poster__inner:hover .poster__img {
+      transform: none;
+    }
+
+    /* La légende pend sous l'affiche : l'ensemble remonte pour rester centré. */
+    .posters__track {
+      translate: 0 -4rem;
+    }
+
+    /* La légende étant sortie du flux, la zone cliquable remonte sur l'affiche. */
+    .poster__open::after {
+      top: calc(-1 * (var(--w) + 1.5rem));
+    }
+
+    .posters__bar {
+      display: block;
+      height: var(--stroke);
+      margin: 0 var(--margin) 2rem;
+      background: color-mix(in srgb, var(--text) 14%, transparent);
+    }
+
+    .posters__bar span {
+      display: block;
+      height: 100%;
+      background: var(--accent);
+      transform-origin: left;
+      animation: posters-bar linear both;
+      animation-timeline: --posters;
+      animation-range: contain 0% contain 100%;
+    }
+
+    /* ─── Le reste du site, en plus grand ─── */
+
+    /* Hero : en quittant l'écran, les deux lignes du titre s'écartent. */
+    .hero__title > .hero__line {
+      animation: hero-split-l linear both;
+      animation-timeline: view();
+      animation-range: exit -10% exit 100%;
+    }
+
+    .hero__title > .hero__line--2 {
+      animation-name: hero-split-r;
+    }
+
+    .hero__below,
+    .hero__foot {
+      animation: hero-sink linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+
+    /* Les éléments qui glissent sur les côtés ne doivent jamais élargir la page. */
+    .hero,
+    .philosophy {
+      overflow-x: clip;
+    }
+
+    /* Philosophie : les affirmations glissent en alternance, de gauche puis de droite. */
+    .philosophy__line {
+      animation: slide-from-l linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
+
+    .philosophy__line:nth-child(even) {
+      animation-name: slide-from-r;
+    }
+
+    /* Bandeaux : deux rubans qui se croisent et s'inclinent avec le défilement. */
+    .marquee {
+      padding-block: clamp(4rem, 8vw, 7rem);
+    }
+
+    .marquee__row {
+      margin-inline: -4vw;
+      padding-block: 0.35em;
+      animation: tape-a linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    .marquee__row:first-of-type {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .marquee__row:last-of-type {
+      background: var(--accent);
+      animation-name: tape-b;
+    }
+
+    .marquee__row:last-of-type .marquee__item {
+      color: var(--bg);
+    }
+
+    /* Technologie : le titre s'approche à l'entrée. */
+    .tech .section__title {
+      transform-origin: left center;
+      animation: title-zoom linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+
+    /* Pied de page : « ADWINI » monte depuis le bas. */
+    .footer__giant .parallax {
+      display: inline-block;
+      animation: giant-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 60%;
+    }
+
+    /* Boutons aimantés : quelques pixels vers la souris (variables écrites par usePointerFx). */
+    .btn {
+      translate: var(--mx, 0px) var(--my, 0px);
+      transition:
+        color 0.32s var(--ease-ui),
+        translate 0.5s var(--ease-out);
+    }
+
+    .btn.is-pointed {
+      transition:
+        color 0.32s var(--ease-ui),
+        translate 0.12s linear;
+    }
+  }
+}
+
+@keyframes hero-split-l {
+  to {
+    opacity: 0;
+    transform: translateX(-14vw);
+  }
+}
+
+@keyframes hero-split-r {
+  to {
+    opacity: 0;
+    transform: translateX(14vw);
+  }
+}
+
+@keyframes hero-sink {
+  to {
+    opacity: 0;
+    transform: translateY(-4rem);
+  }
+}
+
+@keyframes slide-from-l {
+  from {
+    opacity: 0;
+    transform: translateX(-10vw);
+  }
+}
+
+@keyframes slide-from-r {
+  from {
+    opacity: 0;
+    transform: translateX(10vw);
+  }
+}
+
+@keyframes tape-a {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-3.5deg);
+  }
+}
+
+@keyframes tape-b {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(2.5deg);
+  }
+}
+
+@keyframes title-zoom {
+  from {
+    opacity: 0.2;
+    transform: scale(0.78);
+  }
+}
+
+@keyframes giant-rise {
+  from {
+    transform: translateY(75%);
+  }
+}

@@ -9,6 +9,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/components.css';
 import './styles/sections.css';
+import './styles/showcase.css';
 
 import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
