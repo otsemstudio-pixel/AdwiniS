@@ -18,7 +18,8 @@ const fr = render('fr');
 const en = render('en');
 const swap =
   "<script>(function(){var r=document.getElementById('root'),t=document.getElementById('ssr-en');" +
-  "if(document.documentElement.getAttribute('data-lang')==='en'){r.innerHTML=t.innerHTML;r.setAttribute('data-ssr','en')}" +
+  // Copie de nœuds, sans innerHTML : compatible avec Trusted Types (voir scripts/harden.mjs).
+  "if(document.documentElement.getAttribute('data-lang')==='en'){r.replaceChildren(t.content.cloneNode(true));r.setAttribute('data-ssr','en')}" +
   't.parentNode.removeChild(t)})();</script>';
 
 const html = readFileSync(htmlPath, 'utf8');

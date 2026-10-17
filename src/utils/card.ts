@@ -22,8 +22,8 @@ function toUrl(value: string, base?: string) {
 export const linkedinUrl = (v: string) => toUrl(v, 'https://www.linkedin.com/in/');
 export const instagramUrl = (v: string) => toUrl(v, 'https://instagram.com/');
 
-/** Échappement vCard 3.0 : antislash, virgule, point-virgule, retours à la ligne. */
-const esc = (v: string) => v.trim().replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\r?\n/g, '\\n');
+/** Échappement vCard 3.0 : antislash, virgule, point-virgule, retours à la ligne (CR seul compris). */
+const esc = (v: string) => v.trim().replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\r\n|\r|\n/g, '\\n');
 
 /** vCard 3.0, compris par Android, iOS et les clients de messagerie. */
 export function buildVCard(d: CardData) {

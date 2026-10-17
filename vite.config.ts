@@ -63,6 +63,8 @@ export default defineConfig({
   plugins: [react(), preloadTitleFont(), openingSequence()],
   build: {
     target: 'es2019',
+    // Jamais de carte des sources en production : le code publié reste minifié et illisible.
+    sourcemap: false,
     // Site principal + pages autonomes (non liées, non indexées) : /carte, /card, /brief.
     rollupOptions: {
       input: {

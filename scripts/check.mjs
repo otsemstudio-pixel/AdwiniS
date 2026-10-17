@@ -694,6 +694,70 @@ section('Carte de brief (contact)');
   await mc.close();
 }
 
+section('Sécurité');
+{
+  // Chaque page commence par la politique de sécurité, avant tout script.
+  for (const path of ['', 'carte/', 'card/', 'brief/']) {
+    const html = readFileSync(resolve(root, 'dist', path, 'index.html'), 'utf8');
+    const head = html.slice(html.indexOf('<head>'), html.indexOf('<script'));
+    const policy = /<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(head)?.[1] ?? '';
+    ok(
+      /default-src 'none'/.test(policy) && /require-trusted-types-for 'script'/.test(policy) && !/unsafe-eval|script-src[^;]*unsafe-inline/.test(policy),
+      `/${path} : CSP stricte avant le premier script`,
+    );
+    ok(!/<!--(?!\s*-->|\$|\/\$)/.test(html), `/${path} : aucun commentaire de développement dans le HTML`);
+    ok(/<script type="module"[^>]+integrity="sha384-/.test(html), `/${path} : intégrité (SRI) sur le script principal`);
+  }
+  ok(readdirSync(resolve(root, 'dist/assets')).every((f) => !f.endsWith('.map')), 'Aucune carte des sources (.map) publiée');
+
+  // Parcours complet sans aucune violation de la politique (scripts, styles, images, QR, export).
+  const { page, context } = await newPage({ width: 1440, height: 900 });
+  await page.evaluateOnNewDocument(() => {
+    window.__violations = [];
+    document.addEventListener('securitypolicyviolation', (e) => window.__violations.push(`${e.violatedDirective} ${e.blockedURI}`));
+  });
+  await page.goto(base, { waitUntil: 'networkidle0' });
+  await scrollThrough(page);
+  await page.evaluate(() => document.querySelectorAll('.poster__open')[0].click());
+  await new Promise((r) => setTimeout(r, 400));
+  await page.keyboard.press('Escape');
+  const violations = await page.evaluate(() => window.__violations);
+  ok(violations.length === 0, 'Aucune violation de la CSP en naviguant', violations.slice(0, 3).join(' | '));
+
+  // Une injection de HTML par script est refusée (Trusted Types), un script injecté ne s'exécute pas.
+  // Les deux refus sont signalés en console : ici ils sont attendus, on ne les compte pas comme erreurs.
+  page.removeAllListeners('console');
+  const injected = await page.evaluate(() => {
+    let blocked = false;
+    try {
+      document.createElement('div').innerHTML = '<img src=x onerror="window.__pwn=1">';
+    } catch {
+      blocked = true;
+    }
+    try {
+      const s = document.createElement('script');
+      s.textContent = 'window.__pwn2 = 1';
+      document.body.appendChild(s);
+    } catch {
+      /* refusé par Trusted Types */
+    }
+    return { blocked, ran: Boolean(window.__pwn || window.__pwn2) };
+  });
+  ok(injected.blocked && !injected.ran, 'Injection de HTML ou de script refusée');
+  await context.close();
+
+  // Intégrée dans un cadre par un autre site, la page reste invisible et ne reçoit aucun clic (anti-clickjacking).
+  {
+    const { page: p, context: c } = await newPage({ width: 1024, height: 768 });
+    await p.setContent(`<iframe src="${base}" width="800" height="600"></iframe>`);
+    await new Promise((r) => setTimeout(r, 2500));
+    const framed = p.frames().find((f) => f.url().startsWith(base));
+    const hidden = framed ? await framed.evaluate(() => getComputedStyle(document.documentElement).visibility) : 'absent';
+    ok(hidden === 'hidden', 'Intégrée dans un cadre étranger : la page reste invisible', hidden);
+    await c.close();
+  }
+}
+
 section('Fluidité du défilement (CPU ×4)');
 for (const width of [375, 1440]) {
   const { page, context } = await newPage({ width, height: width < 768 ? 740 : 900 });
