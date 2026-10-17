@@ -26,6 +26,16 @@ const TARGETS: [string, Range][] = [
   ['.footer__giant', 'enter'],
 ];
 
+/**
+ * Carrousel figé : seule l'affiche face à l'écran reçoit `is-active` (ses plans s'animent,
+ * les autres sont figés). La classe ne change qu'au passage d'une affiche à la suivante.
+ */
+function markActive(gallery: HTMLElement, p: number) {
+  const items = gallery.querySelectorAll<HTMLElement>('.poster');
+  const active = Math.round(p * (items.length - 1));
+  items.forEach((el, i) => el.classList.toggle('is-active', i === active));
+}
+
 const clamp = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 function progress(range: Range, r: DOMRect, vh: number) {
@@ -64,6 +74,7 @@ export function useScrollFx(lang: string) {
         if (v !== it.last) {
           it.last = v;
           it.el.style.setProperty('--p', String(v));
+          if (it.range === 'pin') markActive(it.el, v);
         }
       });
     };

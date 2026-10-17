@@ -580,7 +580,7 @@
     --m: max(var(--a), -1 * var(--a));
     flex: 0 0 var(--w);
     opacity: calc(1 - var(--m) * 0.65);
-    transform: perspective(1400px) translateZ(calc(var(--m) * -260px)) rotateY(calc(var(--a) * -48deg));
+    transform: perspective(1400px) translateZ(calc(var(--m) * -260px)) rotateY(calc(var(--a) * -28deg));
   }
 
   .fx .poster__img,
@@ -591,6 +591,125 @@
 
   .fx .poster__inner {
     gap: 0;
+  }
+
+  /* ─── Affiches en volume (PosterScene) ───
+     Le cadre devient un espace 3D : il pivote avec le carrousel (--a) et vers la souris (--rx, --ry),
+     ce qui fait glisser les plans les uns devant les autres (vraie parallaxe). */
+  .fx .poster__frame:has(.poster__scene) {
+    overflow: visible;
+    background: none;
+    transform-style: preserve-3d;
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(calc(var(--ry, 0deg) + var(--a, 0) * -24deg));
+  }
+
+  /* Une seule scène vivante à la fois : celle de l'affiche face à l'écran. Les autres montrent
+     l'image d'origine, identique à une scène au repos : le passage de l'une à l'autre ne se voit pas. */
+  .fx .poster:not(.is-active) .poster__scene {
+    display: none;
+  }
+
+  .fx .poster.is-active .poster__frame:has(.poster__scene) .poster__img {
+    opacity: 0;
+  }
+
+  @keyframes scene-orbit {
+    from {
+      transform: rotateY(-7deg) rotateX(3deg);
+    }
+    to {
+      transform: rotateY(7deg) rotateX(-3deg);
+    }
+  }
+
+  .fx .poster__scene {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    background: var(--bg);
+    transform-style: preserve-3d;
+    scale: calc(1 + var(--m) * 0.08);
+    animation: scene-orbit 7s ease-in-out infinite alternate;
+  }
+
+  /* Chaque plan : avancé de --z px, puis réduit d'autant (perspective de 900 px) pour qu'au repos
+     l'affiche paraisse intacte ; c'est seulement en pivotant que la profondeur se révèle. */
+  .fx .scene__layer {
+    --s: calc(1 - var(--z, 0) / 900);
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius);
+    transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s));
+    animation: 6s ease-in-out var(--delay, 0s) infinite both;
+  }
+
+  .fx .scene--float { animation-name: scene-float; }
+  .fx .scene--book-l { animation-name: scene-book-l; }
+  .fx .scene--book-r { animation-name: scene-book-r; }
+  .fx .scene--cloche { animation-name: scene-cloche; animation-duration: 4.5s; }
+  .fx .scene--bob { animation-name: scene-bob; animation-duration: 4.5s; }
+  .fx .scene--pull { animation-name: scene-pull; animation-duration: 5s; }
+  .fx .scene--pulse { animation-name: scene-pulse; animation-duration: 2.4s; }
+  .fx .scene--breathe { animation-name: scene-breathe; animation-duration: 5s; }
+
+  @keyframes scene-float {
+    50% { transform: translateZ(calc(var(--z, 0) * 1px + 45px)) scale(var(--s)); }
+  }
+
+  @keyframes scene-book-l {
+    50% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)) rotateY(10deg); }
+  }
+
+  @keyframes scene-book-r {
+    50% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)) rotateY(-10deg); }
+  }
+
+  @keyframes scene-cloche {
+    0%, 15%, 100% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)); }
+    55%, 70% { transform: translateZ(calc(var(--z, 0) * 1px + 40px)) scale(var(--s)) translateY(-9%) rotate(-4deg); }
+  }
+
+  @keyframes scene-bob {
+    50% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)) translateY(1.5%); }
+  }
+
+  @keyframes scene-pull {
+    50% { transform: translateZ(calc(var(--z, 0) * 1px + 20px)) scale(var(--s)) rotate(-3deg); }
+  }
+
+  @keyframes scene-pulse {
+    0%, 60%, 100% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)); }
+    20% { transform: translateZ(calc(var(--z, 0) * 1px + 30px)) scale(calc(var(--s) * 1.22)) rotate(-5deg); }
+    35% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(calc(var(--s) * 0.96)) rotate(2deg); }
+  }
+
+  @keyframes scene-breathe {
+    50% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(calc(var(--s) * 1.025)); }
+  }
+
+  /* Dalle (affiche 03) : sept copies vers l'arrière forment l'épaisseur ; la dalle gravit les marches. */
+  .fx .scene__slab {
+    --z: calc(var(--k) * -7);
+    filter: brightness(calc(0.75 - var(--k) * 0.07));
+    animation: none;
+  }
+
+  .fx .scene__slab--face {
+    filter: none;
+  }
+
+  @keyframes scene-stairs {
+    0%, 100% { transform: rotateX(4deg) rotateY(-10deg) translateY(1.5%); }
+    25% { transform: rotateX(-6deg) rotateY(-3deg) translateY(-1%); }
+    50% { transform: rotateX(4deg) rotateY(4deg) translateY(1%); }
+    75% { transform: rotateX(-6deg) rotateY(11deg) translateY(-1.5%); }
+  }
+
+  .fx .poster__scene:has(.scene__slab) {
+    background: none;
+    animation: scene-stairs 8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   }
 
   .fx .poster__caption {

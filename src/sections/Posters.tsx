@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
+import { PosterScene, useDesktopScenes } from '../components/PosterScene';
 import { PosterViewer } from '../components/PosterViewer';
 import { Section } from '../components/Section';
-import { posterFiles, posterSrc, posterSrcSet } from '../data/posters';
+import { posterFiles, posterScenes, posterSrc, posterSrcSet } from '../data/posters';
 import { useLanguage } from '../hooks/useLanguage';
 
 /**
@@ -16,6 +17,8 @@ export function Posters({ index }: { index: number }) {
   const [open, setOpen] = useState<number | null>(null);
   const n = posterFiles.length;
   const gallery = useRef<HTMLDivElement>(null);
+  const scenes = useDesktopScenes();
+  const sizes = '(min-width: 1024px) min(34vw, 62vh), (min-width: 768px) 46vw, 82vw';
 
   // Carrousel figé (bureau) : les affiches défilent selon la position verticale de la page.
   // Au clavier seulement (focus visible), l'affiche qui reçoit le focus est ramenée au centre ;
@@ -70,13 +73,14 @@ export function Posters({ index }: { index: number }) {
                         className="poster__img"
                         src={posterSrc(f.file, 800)}
                         srcSet={posterSrcSet(f.file)}
-                        sizes="(min-width: 1024px) min(34vw, 62vh), (min-width: 768px) 46vw, 82vw"
+                        sizes={sizes}
                         width={1080}
                         height={1080}
                         loading="lazy"
                         decoding="async"
                         alt={item.alt}
                       />
+                      {scenes && <PosterScene scene={posterScenes[i]} file={f.file} sizes={sizes} />}
                     </div>
                     <div className="poster__caption">
                       <p className="poster__line">

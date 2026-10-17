@@ -117,7 +117,8 @@ for (let i = 0; i < 50; i++) {
     await new Promise((r) => setTimeout(r, 200));
   }
 }
-const browser = await puppeteer.launch({ executablePath: findChrome() });
+// Délai de protocole allongé : le test de fluidité parcourt toute la page à CPU ×4 (près de 3 min).
+const browser = await puppeteer.launch({ executablePath: findChrome(), protocolTimeout: 600000 });
 
 async function newPage({ width = 1440, height = 900, lang = 'fr-FR', media = [{ name: 'prefers-color-scheme', value: 'light' }], opening = false } = {}) {
   const context = await browser.createBrowserContext();
