@@ -6,6 +6,7 @@ import { Thread } from './components/Thread';
 import { useActiveSection } from './hooks/useActiveSection';
 import { useLanguage } from './hooks/useLanguage';
 import { usePointerFx } from './hooks/usePointerFx';
+import { useScrollFx } from './hooks/useScrollFx';
 import { useRevealAll } from './hooks/useReveal';
 import { CardMaker } from './sections/CardMaker';
 import { Contact } from './sections/Contact';
@@ -20,13 +21,12 @@ import { Poles } from './sections/Poles';
 import { Posters } from './sections/Posters';
 import { Subscription } from './sections/Subscription';
 import { TechCulture } from './sections/TechCulture';
-import { Works } from './sections/Works';
 
 /**
- * Ordre des sections. Le hero est la n° 1, le pied de page la n° 14 :
- * ces numéros alimentent les cercles, le compteur « 02 / 14 » et le fil continu.
+ * Ordre des sections. Le hero est la n° 1, le pied de page la n° 13 :
+ * ces numéros alimentent les cercles, le compteur « 02 / 13 » et le fil continu.
  */
-const SECTIONS = [Poles, Philosophy, Subscription, FixedOffers, Posters, Works, Differentiators, TechCulture, Network, Name, CardMaker, Contact];
+const SECTIONS = [Poles, Philosophy, Subscription, FixedOffers, Posters, Differentiators, TechCulture, Network, Name, CardMaker, Contact];
 const TOTAL = SECTIONS.length + 2;
 
 export default function App() {
@@ -34,6 +34,7 @@ export default function App() {
   const active = useActiveSection();
   useRevealAll(lang);
   usePointerFx();
+  useScrollFx(lang);
 
   // Signale au script de secours (index.html) que l'application a bien démarré.
   useEffect(() => {

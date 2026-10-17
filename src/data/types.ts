@@ -35,18 +35,6 @@ export interface FixedOffer {
   description: string;
 }
 
-export interface Project {
-  code: string;
-  category: string;
-  title: string;
-  summary: string;
-  imageLabel: string;
-  problem: string;
-  insight: string;
-  direction: string;
-  system: string;
-}
-
 export interface CardField {
   key: 'name' | 'role' | 'company' | 'email' | 'phone' | 'website' | 'linkedin' | 'instagram';
   label: string;
@@ -106,18 +94,6 @@ export interface Content {
     message: string;
     design: string;
     items: { title: string; theme: string; description: string; design: string; alt: string }[];
-  };
-  work: SectionHead & {
-    intro: string;
-    tag: string;
-    view: string;
-    close: string;
-    problem: string;
-    insight: string;
-    direction: string;
-    system: string;
-    disclaimer: string;
-    projects: Project[];
   };
   differentiators: SectionHead & {
     intro: string;

@@ -238,67 +238,6 @@ const en: Content = {
       },
     ],
   },
-  work: {
-    label: 'Work',
-    title: 'Studio concepts.',
-    intro:
-      'The studio is new. Rather than invent clients, we show how we think through self-initiated concepts.',
-    tag: 'Adwini concept',
-    view: 'View',
-    close: 'Close project',
-    problem: 'Problem',
-    insight: 'Insight',
-    direction: 'Creative direction',
-    system: 'Visual system',
-    disclaimer: 'Concept project by the studio. No real client is attached to this work.',
-    projects: [
-      {
-        code: 'PRJ—001',
-        category: 'Identity',
-        title: 'A mobile bank for market traders',
-        summary: 'Identity for a neobank built around women who trade in city markets.',
-        imageLabel: '[IMAGE PROJET 01]',
-        problem:
-          'Digital finance tends to borrow the look of Western banks — cold blues, plastic cards, skylines. The people actually using it, often traders taking payments by mobile money, don’t see themselves in any of it.',
-        insight:
-          'In a market, trust comes from showing up: same stall, same spot, same rituals every day. A financial brand can speak that language of constancy instead of prestige.',
-        direction:
-          'An identity built on the grid of market stalls: repeated rectangular modules, heavy type that stays legible in full sun, one accent colour reserved for amounts.',
-        system:
-          'Modular logotype, dedicated icons (mobile money wallet, stall, produce sack), legibility rules for entry-level screens and printed receipts.',
-      },
-      {
-        code: 'PRJ—002',
-        category: 'Interfaces',
-        title: 'A dashboard for a farming cooperative',
-        summary: 'Harvest tracking for a cooperative whose members speak several languages.',
-        imageLabel: '[IMAGE PROJET 02]',
-        problem:
-          'Members of a cooperative don’t share a language, a reading level or a phone model. Most dashboards assume they do.',
-        insight:
-          'Farmers already count in concrete units: sacks, baskets, plots. The interface should count the way they do before it counts in kilograms.',
-        direction:
-          'Screens built around large numbers and unit icons, navigation never more than three levels deep, every label available in several languages.',
-        system:
-          'A lean design system: four-column grid, three text sizes, an agricultural icon set, components tested on 320-pixel screens.',
-      },
-      {
-        code: 'PRJ—003',
-        category: 'Stories',
-        title: 'Telling the story of solar',
-        summary: 'Investor deck and data visuals for a solar home kit company.',
-        imageLabel: '[IMAGE PROJET 03]',
-        problem:
-          'Investor decks from African companies often lean on generic templates that flatten what makes the venture distinct: the ground, the habits, the people.',
-        insight:
-          'A solar install is best told in the evening hours it gives back — reading, working, charging. The story should start from those hours, not from watts.',
-        direction:
-          'A day-and-night narrative structure, editorial typography, hand-drawn data visuals instead of default charts.',
-        system:
-          'Deck template, data-visual library, short animations for social media, every page in English and French.',
-      },
-    ],
-  },
   network: {
     label: 'The network',
     title: 'One studio. Many specialists.',

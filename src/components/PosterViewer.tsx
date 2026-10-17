@@ -16,6 +16,7 @@ export function PosterViewer({ index, onChange }: PosterViewerProps) {
   const p = t.posters;
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<Element | null>(null);
+  const scrollY = useRef(0);
   const n = posterFiles.length;
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export function PosterViewer({ index, onChange }: PosterViewerProps) {
     if (!el) return;
     if (index !== null && !el.open) {
       opener.current = document.activeElement;
+      scrollY.current = window.scrollY;
       el.showModal();
       document.documentElement.classList.add('is-locked');
     } else if (index === null && el.open) {
@@ -32,7 +34,9 @@ export function PosterViewer({ index, onChange }: PosterViewerProps) {
 
   const handleClose = () => {
     document.documentElement.classList.remove('is-locked');
-    (opener.current as HTMLElement | null)?.focus();
+    (opener.current as HTMLElement | null)?.focus({ preventScroll: true });
+    // La page reprend exactement où elle était, quelle que soit la façon dont on ferme.
+    window.scrollTo({ top: scrollY.current, behavior: 'instant' as ScrollBehavior });
     onChange(null);
   };
 

@@ -242,67 +242,6 @@ const fr: Content = {
       },
     ],
   },
-  work: {
-    label: 'Travaux',
-    title: 'Concepts du studio.',
-    intro:
-      'Le studio est jeune. Plutôt que d’inventer des clients, nous montrons notre manière de penser à travers des concepts auto-initiés.',
-    tag: 'Concept Adwini',
-    view: 'Voir',
-    close: 'Fermer le projet',
-    problem: 'Problème',
-    insight: 'Intuition',
-    direction: 'Direction créative',
-    system: 'Système visuel',
-    disclaimer: 'Projet conceptuel réalisé par le studio. Aucun client réel n’est associé à ce travail.',
-    projects: [
-      {
-        code: 'PRJ—001',
-        category: 'Identité',
-        title: 'Une banque mobile pour les marchés',
-        summary: 'Identité d’une néobanque pensée pour les commerçantes des marchés urbains.',
-        imageLabel: '[IMAGE PROJET 01]',
-        problem:
-          'Les services financiers numériques empruntent presque tous l’esthétique des banques occidentales : bleu froid, cartes bancaires, gratte-ciel. Leurs utilisatrices réelles, souvent des commerçantes qui encaissent par mobile money, ne s’y reconnaissent pas.',
-        insight:
-          'Sur un marché, la confiance passe par la régularité : le même étal, la même place, les mêmes gestes chaque jour. Une marque financière peut parler ce langage de la constance plutôt que celui du prestige.',
-        direction:
-          'Une identité construite sur la grille des étals : modules rectangulaires répétés, typographie massive et lisible au soleil, une seule couleur d’accent réservée aux montants.',
-        system:
-          'Logotype modulaire, pictogrammes dédiés (portefeuille mobile money, étal, sac de marchandise), règles de lisibilité pour écrans d’entrée de gamme et reçus imprimés.',
-      },
-      {
-        code: 'PRJ—002',
-        category: 'Interfaces',
-        title: 'Le tableau de bord d’une coopérative',
-        summary: 'Interface de suivi des récoltes pour une coopérative agricole multilingue.',
-        imageLabel: '[IMAGE PROJET 02]',
-        problem:
-          'Les membres d’une coopérative ne partagent ni la même langue, ni le même niveau de lecture, ni le même téléphone. Les tableaux de bord classiques supposent l’inverse.',
-        insight:
-          'Les agriculteurs comptent déjà en unités concrètes : sacs, paniers, parcelles. L’interface doit compter comme eux avant de compter en kilogrammes.',
-        direction:
-          'Des écrans construits autour de grands chiffres et de pictogrammes d’unités, une navigation à trois niveaux maximum, chaque libellé disponible en plusieurs langues.',
-        system:
-          'Design system léger : grille à quatre colonnes, trois tailles de texte, jeu de pictogrammes agricoles, composants testés sur écrans de 320 pixels.',
-      },
-      {
-        code: 'PRJ—003',
-        category: 'Récits',
-        title: 'Raconter l’énergie solaire',
-        summary: 'Dossier investisseur et visuels de données pour une entreprise de kits solaires.',
-        imageLabel: '[IMAGE PROJET 03]',
-        problem:
-          'Les dossiers investisseurs d’entreprises africaines reprennent souvent des gabarits génériques qui effacent ce qui rend le projet singulier : le terrain, les usages, les gens.',
-        insight:
-          'Une installation solaire se raconte en heures gagnées le soir : lire, travailler, recharger. Le récit doit partir de ces heures plutôt que des watts.',
-        direction:
-          'Une narration en séquences jour / nuit, une typographie éditoriale, des visuels de données dessinés à la main plutôt que des graphiques par défaut.',
-        system:
-          'Gabarit de présentation, bibliothèque de visuels de données, animations courtes pour les réseaux sociaux, version française et anglaise de chaque page.',
-      },
-    ],
-  },
   network: {
     label: 'Le réseau',
     title: 'Un studio. Plusieurs spécialistes.',

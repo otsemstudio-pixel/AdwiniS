@@ -18,10 +18,12 @@ export function Posters({ index }: { index: number }) {
   const gallery = useRef<HTMLDivElement>(null);
 
   // Carrousel figé (bureau) : les affiches défilent selon la position verticale de la page.
-  // Au clavier, l'affiche qui reçoit le focus est ramenée au centre de la scène.
-  const center = (i: number) => {
+  // Au clavier seulement (focus visible), l'affiche qui reçoit le focus est ramenée au centre ;
+  // un clic de souris ne doit jamais faire défiler la page.
+  const center = (i: number, target: EventTarget) => {
     const el = gallery.current;
-    if (!el || getComputedStyle(el).viewTimelineName !== '--posters') return;
+    if (!el || !document.documentElement.classList.contains('fx')) return;
+    if (!(target instanceof Element) || !target.matches(':focus-visible')) return;
     const top = el.getBoundingClientRect().top + window.scrollY;
     const run = el.offsetHeight - window.innerHeight;
     window.scrollTo({ top: top + (run * i) / (n - 1), behavior: 'instant' as ScrollBehavior });
@@ -61,7 +63,7 @@ export function Posters({ index }: { index: number }) {
             {posterFiles.map((f, i) => {
               const item = p.items[i];
               return (
-                <li key={f.code} className="poster" style={{ ['--i' as string]: i }} onFocus={() => center(i)}>
+                <li key={f.code} className="poster" style={{ ['--i' as string]: i }} onFocus={(e) => center(i, e.target)}>
                   <article className="poster__inner">
                     <div className="poster__frame" data-tilt="">
                       <img

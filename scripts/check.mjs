@@ -180,8 +180,7 @@ for (const width of [320, 375, 768, 1440, 1920]) {
       .filter((el) => {
         const r = el.getBoundingClientRect();
         if (!r.width || el.closest('dialog:not([open])') || el.classList.contains('skip-link')) return false;
-        // Le titre-bouton d'une carte projet ou d'une affiche couvre toute la carte via ::after.
-        if (el.classList.contains('work__open')) return el.closest('.work__card').getBoundingClientRect().height < 44;
+        // Le titre-bouton d'une affiche couvre toute la carte via ::after.
         if (el.classList.contains('poster__open')) return el.closest('.poster__inner').getBoundingClientRect().height < 44;
         // Les liens dans un paragraphe sont exemptés (WCAG 2.5.8) ; les commandes autonomes doivent faire 44 px.
         return r.height < 44 && getComputedStyle(el).display !== 'inline';
@@ -204,7 +203,7 @@ for (const [width, zoom, lang] of [[320, 1, 'fr-FR'], [360, 1, 'en-US'], [375, 1
     // Texte agrandi : réglage « taille de police » des téléphones Android.
     if (zoom !== 1) await page.evaluateOnNewDocument((z) => document.addEventListener('DOMContentLoaded', () => (document.documentElement.style.fontSize = `${z * 100}%`)), zoom);
     await page.goto(base + path, { waitUntil: 'networkidle0' });
-    await page.addStyleTag({ content: '*{animation:none!important;transition:none!important} .reveal{opacity:1!important;transform:none!important}' });
+    await page.addStyleTag({ content: '*{animation:none!important;transition:none!important} .reveal{opacity:1!important;transform:none!important} .fx .card{rotate:none!important;translate:none!important;scale:none!important}' });
     const issues = await page.evaluate(auditAlignment);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     if (overflow > 0) issues.push(`débordement horizontal de ${overflow} px`);
@@ -343,7 +342,7 @@ section('Structure et accessibilité');
     stops.push(
       await page.evaluate(() => {
         const el = document.activeElement;
-        const cs = getComputedStyle(el, el.matches('.work__open, .poster__open') ? '::after' : null);
+        const cs = getComputedStyle(el, el.matches('.poster__open') ? '::after' : null);
         return {
           name: (el.getAttribute('aria-label') || el.textContent || el.id || '').trim().slice(0, 28),
           outline: cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2,
@@ -354,26 +353,36 @@ section('Structure et accessibilité');
   ok(stops.every((s) => s.outline), 'Focus visible sur chaque arrêt', stops.map((s) => s.name).join(' → '));
   await page.screenshot({ path: resolve(out, 'focus.png') });
 
-  /* 7. Panneau projet --------------------------------------------------- */
-  section('Panneau projet');
-  await page.evaluate(() => document.querySelector('#travaux').scrollIntoView());
-  await page.focus('.work__open');
-  await page.keyboard.press('Enter');
-  await new Promise((r) => setTimeout(r, 400));
-  const panel = await page.evaluate(() => {
-    const d = document.querySelector('dialog.panel');
-    return { open: d.open, text: d.textContent };
+  /* 7. Visionneuse d'affiches ------------------------------------------ */
+  section('Visionneuse d’affiches');
+  // Au milieu du carrousel figé : ouvrir puis fermer ne doit jamais faire défiler la page.
+  await page.evaluate(() => {
+    const g = document.querySelector('.posters__gallery');
+    window.scrollTo({ top: g.getBoundingClientRect().top + scrollY + (g.offsetHeight - innerHeight) * (3 / 7), behavior: 'instant' });
   });
-  ok(panel.open && /Problème/.test(panel.text) && /Système visuel/.test(panel.text), 'Ouverture au clavier, 4 rubriques');
-  ok(/\[IMAGE PROJET 01\]/.test(panel.text), 'Emplacement [IMAGE PROJET 01] présent');
-  await page.screenshot({ path: resolve(out, 'panel-1440.png') });
+  await new Promise((r) => setTimeout(r, 400));
+  const y0 = await page.evaluate(() => scrollY);
+  const target = await page.evaluate(() => {
+    const el = [...document.querySelectorAll('.poster__open')][3];
+    const r = el.closest('.poster__inner').querySelector('.poster__frame').getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  });
+  await page.mouse.click(target.x, target.y);
+  await new Promise((r) => setTimeout(r, 500));
+  const viewer = await page.evaluate(() => {
+    const d = document.querySelector('dialog.viewer');
+    return { open: d.open, text: d.textContent, y: scrollY };
+  });
+  ok(viewer.open && /Le message/.test(viewer.text) && /Le parti pris/.test(viewer.text), 'Clic sur l’affiche : visionneuse ouverte, message et parti pris');
+  await page.keyboard.press('ArrowRight');
+  await new Promise((r) => setTimeout(r, 300));
+  ok(await page.evaluate(() => /AFF—005/.test(document.querySelector('dialog.viewer').textContent)), 'Flèche droite : affiche suivante');
+  await page.screenshot({ path: resolve(out, 'viewer-1440.png') });
   await page.keyboard.press('Escape');
-  await new Promise((r) => setTimeout(r, 200));
-  const after = await page.evaluate(() => ({
-    open: document.querySelector('dialog.panel').open,
-    focus: document.activeElement.className,
-  }));
-  ok(!after.open && after.focus.includes('work__open'), 'Échap ferme et rend le focus à la carte');
+  await new Promise((r) => setTimeout(r, 300));
+  const after = await page.evaluate(() => ({ open: document.querySelector('dialog.viewer').open, focus: document.activeElement.className, y: scrollY }));
+  ok(!after.open && after.focus.includes('poster__open'), 'Échap ferme et rend le focus à l’affiche');
+  ok(Math.abs(viewer.y - y0) < 2 && Math.abs(after.y - y0) < 2, 'La page ne bouge pas à l’ouverture ni à la fermeture', `${Math.round(y0)} → ${Math.round(viewer.y)} → ${Math.round(after.y)}`);
 
   /* 8. Langue ----------------------------------------------------------- */
   section('Langue');

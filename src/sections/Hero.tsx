@@ -1,4 +1,5 @@
 import { GridLines } from '../components/GridLines';
+import { HeroMark } from '../components/HeroMark';
 import { Sparks } from '../components/Logo';
 import { RevealText } from '../components/RevealText';
 import { useLanguage } from '../hooks/useLanguage';
@@ -16,8 +17,9 @@ export function Hero() {
   const word = Math.max(lastWord, ...`${l1} ${l2}`.split(' ').map((w) => w.length));
   const offset = l1.split(' ').length;
   return (
-    <section id="top" className="hero" data-section={1} aria-labelledby="hero-title">
+    <section id="top" className="hero" data-section={1} aria-labelledby="hero-title" data-tilt-zone="">
       <GridLines />
+      <HeroMark />
       <div className="wrap hero__inner">
         <h1 id="hero-title" className="hero__title" style={{ ['--word' as string]: word }}>
           <RevealText mode="load" className="hero__line" text={l1} />{' '}
