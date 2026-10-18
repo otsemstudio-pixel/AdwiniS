@@ -20,6 +20,8 @@ const en: Content = {
     primaryLabel: 'Main navigation',
     themeToDark: 'Switch to dark mode',
     themeToLight: 'Switch to light mode',
+    soundOn: 'Turn sounds on',
+    soundOff: 'Turn sounds off',
   },
   hero: {
     titleLines: ['African ideas.', 'Seen differently.'],

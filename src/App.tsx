@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Cursor } from './components/Cursor';
 import { Marquee } from './components/Marquee';
 import { Nav } from './components/Nav';
 import { ScrollCounter } from './components/ScrollCounter';
@@ -7,6 +8,7 @@ import { useActiveSection } from './hooks/useActiveSection';
 import { useLanguage } from './hooks/useLanguage';
 import { usePointerFx } from './hooks/usePointerFx';
 import { useScrollFx } from './hooks/useScrollFx';
+import { useUiSounds } from './hooks/useUiSounds';
 import { useRevealAll } from './hooks/useReveal';
 import { CardMaker } from './sections/CardMaker';
 import { Contact } from './sections/Contact';
@@ -35,6 +37,7 @@ export default function App() {
   useRevealAll(lang);
   usePointerFx();
   useScrollFx(lang);
+  useUiSounds();
 
   // Signale au script de secours (index.html) que l'application a bien démarré.
   useEffect(() => {
@@ -76,6 +79,7 @@ export default function App() {
       <Footer index={TOTAL} />
       <ScrollCounter active={active} total={TOTAL} />
       <div className="grain" aria-hidden="true" />
+      <Cursor />
     </>
   );
 }

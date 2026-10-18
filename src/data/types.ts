@@ -58,6 +58,8 @@ export interface Content {
     primaryLabel: string;
     themeToDark: string;
     themeToLight: string;
+    soundOn: string;
+    soundOff: string;
   };
   hero: {
     titleLines: [string, string];

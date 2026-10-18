@@ -1,6 +1,7 @@
 import { LanguageSwitch } from '../components/LanguageSwitch';
 import { navLinks } from '../components/navLinks';
 import { Rule } from '../components/Rule';
+import { SoundToggle } from '../components/SoundToggle';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { site } from '../data/site';
 import { useLanguage } from '../hooks/useLanguage';
@@ -51,6 +52,7 @@ export function Footer({ index }: { index: number }) {
             <div className="footer__prefs">
               <LanguageSwitch />
               <ThemeToggle />
+              <SoundToggle />
             </div>
           </div>
         </div>

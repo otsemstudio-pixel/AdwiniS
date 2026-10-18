@@ -4,6 +4,7 @@ import { useNavScroll } from '../hooks/useScrolled';
 import { LanguageSwitch } from './LanguageSwitch';
 import { LockupHorizontal } from './Logo';
 import { MobileMenu } from './MobileMenu';
+import { SoundToggle } from './SoundToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { navLinks } from './navLinks';
 
@@ -34,6 +35,7 @@ export function Nav() {
             </ul>
             <LanguageSwitch />
             <ThemeToggle />
+            <SoundToggle />
             <a href="#contact" className="btn btn--solid btn--small">
               <span>{t.nav.cta}</span>
             </a>
