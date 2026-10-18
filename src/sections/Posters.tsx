@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { PosterScene, useDesktopScenes } from '../components/PosterScene';
 import { PosterViewer } from '../components/PosterViewer';
 import { Section } from '../components/Section';
-import { posterFiles, posterScenes, posterSrc, posterSrcSet } from '../data/posters';
+import { posterFiles, posterMotions, posterSrc, posterSrcSet } from '../data/posters';
 import { useLanguage } from '../hooks/useLanguage';
 
 /**
@@ -80,7 +80,7 @@ export function Posters({ index }: { index: number }) {
                         decoding="async"
                         alt={item.alt}
                       />
-                      {scenes && <PosterScene scene={posterScenes[i]} file={f.file} sizes={sizes} />}
+                      {scenes && <PosterScene motion={posterMotions[i]} file={f.file} sizes={sizes} />}
                     </div>
                     <div className="poster__caption">
                       <p className="poster__line">

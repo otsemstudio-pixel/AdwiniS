@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { type PosterScene as Scene, posterSrc, posterSrcSet } from '../data/posters';
+import { type PosterMotion, posterSrc, posterSrcSet } from '../data/posters';
 
 /** Mêmes conditions que la mise en scène du bureau (hooks/useScrollFx.ts). */
 const DESKTOP = '(min-width: 1024px) and (prefers-reduced-motion: no-preference)';
-/** Nombre de copies empilées pour une affiche en dalle. */
+/** Nombre de copies empilées : la face, puis l'épaisseur. */
 const SLAB = 7;
 
-/** Vrai seulement sur ordinateur, après le montage : le HTML prérendu et les mobiles n'ont pas les plans. */
+/** Vrai seulement sur ordinateur, après le montage : le HTML prérendu et les mobiles n'ont pas les couches. */
 export function useDesktopScenes() {
   const [on, setOn] = useState(false);
   useEffect(() => {
@@ -20,39 +20,28 @@ export function useDesktopScenes() {
 }
 
 /**
- * L'affiche en volume : des plans découpés dans la même image, à des profondeurs différentes.
+ * L'affiche en dalle : l'image entière en façade, et derrière elle des copies assombries,
+ * espacées en profondeur, qui forment l'épaisseur. Jamais découpée.
  * Purement décoratif (l'image d'origine, avec son texte alternatif, reste dessous).
  * Le même fichier que l'affiche est réutilisé : aucun téléchargement supplémentaire.
  */
-export function PosterScene({ scene, file, sizes }: { scene: Scene; file: string; sizes: string }) {
-  const img = (key: string | number, className: string, style: Record<string, string | number>) => (
-    <img
-      key={key}
-      className={className}
-      src={posterSrc(file, 800)}
-      srcSet={posterSrcSet(file)}
-      sizes={sizes}
-      width={1080}
-      height={1080}
-      alt=""
-      decoding="async"
-      style={style}
-    />
-  );
+export function PosterScene({ motion, file, sizes }: { motion: PosterMotion; file: string; sizes: string }) {
   return (
-    <div className="poster__scene" aria-hidden="true" style={{ ['--bg' as string]: scene.bg }}>
-      {scene.slab
-        ? Array.from({ length: SLAB }, (_, i) => SLAB - 1 - i).map((k) =>
-            img(k, `scene__layer scene__slab${k === 0 ? ' scene__slab--face' : ''}`, { ['--k' as string]: k }),
-          )
-        : scene.layers.map((l, i) =>
-            img(i, `scene__layer${l.fx ? ` scene--${l.fx}` : ''}`, {
-              clipPath: l.clip,
-              transformOrigin: l.origin ?? '50% 50%',
-              ['--z' as string]: l.z,
-              ['--delay' as string]: `${l.delay ?? 0}s`,
-            }),
-          )}
+    <div className={`poster__scene slab--${motion}`} aria-hidden="true">
+      {Array.from({ length: SLAB }, (_, i) => SLAB - 1 - i).map((k) => (
+        <img
+          key={k}
+          className={`scene__slab${k === 0 ? ' scene__slab--face' : ''}`}
+          src={posterSrc(file, 800)}
+          srcSet={posterSrcSet(file)}
+          sizes={sizes}
+          width={1080}
+          height={1080}
+          alt=""
+          decoding="async"
+          style={{ ['--k' as string]: k }}
+        />
+      ))}
     </div>
   );
 }

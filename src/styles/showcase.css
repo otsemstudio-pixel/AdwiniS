@@ -593,9 +593,10 @@
     gap: 0;
   }
 
-  /* ─── Affiches en volume (PosterScene) ───
-     Le cadre devient un espace 3D : il pivote avec le carrousel (--a) et vers la souris (--rx, --ry),
-     ce qui fait glisser les plans les uns devant les autres (vraie parallaxe). */
+  /* ─── Affiches en dalle (PosterScene) ───
+     Le cadre devient un espace 3D : il pivote avec le carrousel (--a) et vers la souris (--rx, --ry).
+     L'affiche n'est jamais découpée : sept copies empilées vers l'arrière lui donnent son épaisseur,
+     et chaque affiche a son propre mouvement (slab-*). */
   .fx .poster__frame:has(.poster__scene) {
     overflow: visible;
     background: none;
@@ -604,7 +605,7 @@
   }
 
   /* Une seule scène vivante à la fois : celle de l'affiche face à l'écran. Les autres montrent
-     l'image d'origine, identique à une scène au repos : le passage de l'une à l'autre ne se voit pas. */
+     l'image d'origine, identique à une dalle au repos : le passage de l'une à l'autre ne se voit pas. */
   .fx .poster:not(.is-active) .poster__scene {
     display: none;
   }
@@ -613,103 +614,93 @@
     opacity: 0;
   }
 
-  @keyframes scene-orbit {
-    from {
-      transform: rotateY(-7deg) rotateX(3deg);
-    }
-    to {
-      transform: rotateY(7deg) rotateX(-3deg);
-    }
-  }
-
   .fx .poster__scene {
     position: absolute;
     inset: 0;
-    border-radius: var(--radius);
-    background: var(--bg);
     transform-style: preserve-3d;
     scale: calc(1 + var(--m) * 0.08);
-    animation: scene-orbit 7s ease-in-out infinite alternate;
+    animation: 8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   }
 
-  /* Chaque plan : avancé de --z px, puis réduit d'autant (perspective de 900 px) pour qu'au repos
-     l'affiche paraisse intacte ; c'est seulement en pivotant que la profondeur se révèle. */
-  .fx .scene__layer {
-    --s: calc(1 - var(--z, 0) / 900);
+  /* La face, puis six copies de plus en plus sombres, 7 px plus loin chacune : l'épaisseur
+     prend les couleurs de l'affiche elle-même. */
+  .fx .scene__slab {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     border-radius: var(--radius);
-    transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s));
-    animation: 6s ease-in-out var(--delay, 0s) infinite both;
-  }
-
-  .fx .scene--float { animation-name: scene-float; }
-  .fx .scene--book-l { animation-name: scene-book-l; }
-  .fx .scene--book-r { animation-name: scene-book-r; }
-  .fx .scene--cloche { animation-name: scene-cloche; animation-duration: 4.5s; }
-  .fx .scene--bob { animation-name: scene-bob; animation-duration: 4.5s; }
-  .fx .scene--pull { animation-name: scene-pull; animation-duration: 5s; }
-  .fx .scene--pulse { animation-name: scene-pulse; animation-duration: 2.4s; }
-  .fx .scene--breathe { animation-name: scene-breathe; animation-duration: 5s; }
-
-  @keyframes scene-float {
-    50% { transform: translateZ(calc(var(--z, 0) * 1px + 45px)) scale(var(--s)); }
-  }
-
-  @keyframes scene-book-l {
-    50% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)) rotateY(10deg); }
-  }
-
-  @keyframes scene-book-r {
-    50% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)) rotateY(-10deg); }
-  }
-
-  @keyframes scene-cloche {
-    0%, 15%, 100% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)); }
-    55%, 70% { transform: translateZ(calc(var(--z, 0) * 1px + 40px)) scale(var(--s)) translateY(-9%) rotate(-4deg); }
-  }
-
-  @keyframes scene-bob {
-    50% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)) translateY(1.5%); }
-  }
-
-  @keyframes scene-pull {
-    50% { transform: translateZ(calc(var(--z, 0) * 1px + 20px)) scale(var(--s)) rotate(-3deg); }
-  }
-
-  @keyframes scene-pulse {
-    0%, 60%, 100% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(var(--s)); }
-    20% { transform: translateZ(calc(var(--z, 0) * 1px + 30px)) scale(calc(var(--s) * 1.22)) rotate(-5deg); }
-    35% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(calc(var(--s) * 0.96)) rotate(2deg); }
-  }
-
-  @keyframes scene-breathe {
-    50% { transform: translateZ(calc(var(--z, 0) * 1px)) scale(calc(var(--s) * 1.025)); }
-  }
-
-  /* Dalle (affiche 03) : sept copies vers l'arrière forment l'épaisseur ; la dalle gravit les marches. */
-  .fx .scene__slab {
-    --z: calc(var(--k) * -7);
     filter: brightness(calc(0.75 - var(--k) * 0.07));
-    animation: none;
+    transform: translateZ(calc(var(--k) * -7px));
   }
 
   .fx .scene__slab--face {
     filter: none;
   }
 
-  @keyframes scene-stairs {
+  .fx .slab--drift { animation-name: slab-drift; animation-duration: 10s; animation-timing-function: linear; }
+  .fx .slab--sway { animation-name: slab-sway; animation-duration: 6s; }
+  .fx .slab--stairs { animation-name: slab-stairs; }
+  .fx .slab--flip { animation-name: slab-flip; animation-duration: 9s; }
+  .fx .slab--lift { animation-name: slab-lift; animation-duration: 5s; }
+  .fx .slab--nudge { animation-name: slab-nudge; animation-duration: 6s; }
+  .fx .slab--pull { animation-name: slab-pull; animation-duration: 7s; }
+  .fx .slab--sink { animation-name: slab-sink; animation-duration: 9s; }
+
+  /* 01 · comme une pièce qui tourne lentement, en huit. */
+  @keyframes slab-drift {
+    0%, 100% { transform: rotateY(-10deg) rotateX(4deg); }
+    25% { transform: rotateY(0deg) rotateX(-5deg); }
+    50% { transform: rotateY(10deg) rotateX(4deg); }
+    75% { transform: rotateY(0deg) rotateX(-5deg); }
+  }
+
+  /* 02 · la foule oscille, de gauche à droite. */
+  @keyframes slab-sway {
+    0%, 100% { transform: rotateY(-12deg) rotateZ(-1deg); }
+    50% { transform: rotateY(12deg) rotateZ(1deg); }
+  }
+
+  /* 03 · la dalle gravit les marches. */
+  @keyframes slab-stairs {
     0%, 100% { transform: rotateX(4deg) rotateY(-10deg) translateY(1.5%); }
     25% { transform: rotateX(-6deg) rotateY(-3deg) translateY(-1%); }
     50% { transform: rotateX(4deg) rotateY(4deg) translateY(1%); }
     75% { transform: rotateX(-6deg) rotateY(11deg) translateY(-1.5%); }
   }
 
-  .fx .poster__scene:has(.scene__slab) {
-    background: none;
-    animation: scene-stairs 8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  /* 04 · mythe d'un côté, pause, réalité de l'autre. */
+  @keyframes slab-flip {
+    0%, 100% { transform: rotateY(-16deg); }
+    35%, 50% { transform: rotateY(16deg); }
+    85% { transform: rotateY(-16deg); }
+  }
+
+  /* 05 · la cloche se soulève : la dalle monte et bascule en arrière, puis se repose. */
+  @keyframes slab-lift {
+    0%, 20%, 100% { transform: translateY(1.5%) rotateX(-4deg); }
+    50%, 65% { transform: translateY(-3.5%) rotateX(12deg) rotateY(-4deg); }
+  }
+
+  /* 06 · un sursaut à la lecture du CV, puis l'immobilité. */
+  @keyframes slab-nudge {
+    0%, 30%, 100% { transform: rotateY(-6deg) rotateX(2deg); }
+    34% { transform: rotateY(5deg) rotateX(-6deg) rotateZ(-2deg); }
+    38% { transform: rotateY(-8deg) rotateX(3deg) rotateZ(1.5deg); }
+    42% { transform: rotateY(3deg) rotateX(-2deg) rotateZ(-0.5deg); }
+    50% { transform: rotateY(-6deg) rotateX(2deg); }
+  }
+
+  /* 07 · le plan est tiré vers la droite, où la femme le retient, puis revient. */
+  @keyframes slab-pull {
+    0%, 100% { transform: rotateY(-6deg) rotateZ(0deg); }
+    45%, 60% { transform: rotateY(16deg) rotateZ(-2.5deg) translateX(1.5%); }
+  }
+
+  /* 08 · la décision pèse : la dalle s'affaisse lentement et s'incline. */
+  @keyframes slab-sink {
+    0%, 100% { transform: rotateX(-3deg) rotateY(-8deg); }
+    50% { transform: translateY(3%) rotateX(14deg) rotateY(-4deg); }
   }
 
   .fx .poster__caption {
