@@ -728,15 +728,315 @@
   color: var(--muted);
 }
 
-.network__list li {
+.network__list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Chaque métier sur son fond animé (components/NetworkScene.tsx) : une bande arrondie,
+   le texte par-dessus, la scène en violet discret derrière. */
+.network__item {
+  position: relative;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 1.25rem;
-  padding-block: 0.6rem;
+  min-height: 6.5rem;
+  padding: 1rem 1.4rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+  isolation: isolate;
+  background: color-mix(in srgb, var(--text) 5%, transparent);
   font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(1.4rem, 2.6vw, 2rem);
   letter-spacing: -0.02em;
+}
+
+.network__name {
+  transition: transform 0.4s var(--ease-out);
+}
+
+.network__item .code {
+  flex: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .network__item:hover .network__name {
+    transform: translateX(0.5rem);
+  }
+
+  .network__item:hover .nscene {
+    opacity: 0.85;
+  }
+}
+
+/* ─── Les scènes ─── */
+
+.nscene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: var(--accent);
+  opacity: 0.38;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-ui);
+}
+
+.nscene svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Les animations n'existent que sur ordinateur, lorsque la liste est à l'écran (classe is-playing
+   posée par Network.tsx) : rien n'est préparé au chargement, tout s'arrête hors de l'écran,
+   et sur téléphone chaque scène reste une image fixe. */
+
+/* 01 · Motion design : une courbe d'animation, des images-clés, une tête de lecture, des formes qui bougent. */
+.nscene__curve {
+  stroke-dasharray: 0.02 0.015;
+}
+
+.nscene__track {
+  opacity: 0.5;
+}
+
+.nscene__key {
+  fill: currentColor;
+  stroke: none;
+}
+
+.network__list.is-playing .nscene__playhead {
+  animation: ns-playhead 4s linear infinite;
+}
+
+.nscene__shape {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.network__list.is-playing .nscene__shape--square {
+  animation: ns-spin 4s var(--ease-in-out) infinite;
+}
+
+.nscene__shape--circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.network__list.is-playing .nscene__shape--circle {
+  animation: ns-bounce 1s cubic-bezier(0.5, 0, 0.5, 1) infinite alternate;
+}
+
+.network__list.is-playing .nscene__shape--tri {
+  animation: ns-slide 4s var(--ease-in-out) infinite;
+}
+
+@keyframes ns-playhead {
+  from { transform: translateX(0); }
+  to { transform: translateX(400px); }
+}
+
+@keyframes ns-spin {
+  0%, 15% { transform: rotate(0) scale(1); }
+  50%, 65% { transform: rotate(180deg) scale(0.6); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes ns-bounce {
+  from { transform: translateY(-16px); }
+  to { transform: translateY(18px) scaleY(0.85); }
+}
+
+@keyframes ns-slide {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  50% { transform: translateX(-30px) rotate(-120deg); }
+}
+
+/* 02 · Illustration : un trait qui se dessine, s'efface et recommence ; des éclats autour. */
+.nscene__draw {
+  stroke-width: 2.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.network__list.is-playing .nscene__draw {
+  animation: ns-draw 5s var(--ease-in-out) infinite;
+}
+
+.network__list.is-playing .nscene__draw--2 {
+  animation-delay: 0.8s;
+}
+
+.nscene__sparks {
+  transform-box: fill-box;
+  transform-origin: 0 100%;
+}
+
+.network__list.is-playing .nscene__sparks {
+  animation: ns-sparks 5s var(--ease-out) infinite;
+}
+
+@keyframes ns-draw {
+  0% { stroke-dashoffset: 1; }
+  45%, 70% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -1; }
+}
+
+@keyframes ns-sparks {
+  0%, 40% { opacity: 0; transform: scale(0.4); }
+  50%, 70% { opacity: 1; transform: scale(1); }
+  85%, 100% { opacity: 0; transform: scale(1.2); }
+}
+
+/* 03 · Traduction : des salutations de plusieurs langues défilent en sens contraires. */
+.nscene__words {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  gap: 0.2rem;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nscene__row {
+  display: flex;
+  width: max-content;
+}
+
+.network__list.is-playing .nscene__row {
+  animation: ns-words 26s linear infinite;
+}
+
+.nscene__row--2 {
+  opacity: 0.6;
+}
+
+.network__list.is-playing .nscene__row--2 {
+  animation-direction: reverse;
+  animation-duration: 32s;
+}
+
+.nscene__row > span {
+  display: flex;
+}
+
+.nscene__word {
+  padding-inline: 0.6em;
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.nscene__row--2 .nscene__word {
+  font-size: 1.1rem;
+}
+
+@keyframes ns-words {
+  to { transform: translateX(-50%); }
+}
+
+/* 04 · Voix off : une onde sonore qui parle, un micro qui émet. */
+.nscene__bar {
+  fill: currentColor;
+  stroke: none;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.network__list.is-playing .nscene__bar {
+  animation: ns-bar 0.9s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -0.13s);
+}
+
+.nscene__mic {
+  fill: currentColor;
+  stroke: none;
+}
+
+.nscene__pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.network__list.is-playing .nscene__pulse {
+  animation: ns-pulse 2.4s var(--ease-out) infinite;
+}
+
+.network__list.is-playing .nscene__pulse--2 {
+  animation-delay: 1.2s;
+}
+
+@keyframes ns-bar {
+  from { transform: scaleY(0.25); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes ns-pulse {
+  from { opacity: 1; transform: scale(0.4); }
+  to { opacity: 0; transform: scale(2.2); }
+}
+
+/* 05 · Développement : du code qui défile, un curseur qui clignote. */
+.nscene__code {
+  position: absolute;
+  inset: 0 0 0 45%;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+.network__list.is-playing .nscene__lines {
+  animation: ns-code 12s steps(16) infinite;
+}
+
+.nscene__lines p {
+  margin: 0;
+  white-space: pre;
+}
+
+.nscene__lines b {
+  font-weight: 400;
+  color: var(--text);
+}
+
+.nscene__caret {
+  position: absolute;
+  top: 45%;
+  left: 0.2rem;
+  width: 0.55em;
+  height: 1.1em;
+  background: currentColor;
+}
+
+.network__list.is-playing .nscene__caret {
+  animation: ns-caret 1s steps(1) infinite;
+}
+
+@keyframes ns-code {
+  to { transform: translateY(-50%); }
+}
+
+@keyframes ns-caret {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nscene * {
+    animation: none !important;
+  }
+
+  .nscene__draw {
+    stroke-dashoffset: 0;
+  }
 }
 
 .network__promise {

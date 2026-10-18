@@ -1132,7 +1132,7 @@ a:focus-visible > .link-draw::after {
   overflow: hidden;
 }
 
-/* ═══ Curseur en éclats (souris uniquement, voir components/Cursor.tsx) ═══
+/* ═══ Curseur main (souris uniquement, voir components/Cursor.tsx) ═══
    Le curseur du système n'est masqué que lorsque celui du site est en place (classe has-cursor) ;
    il revient au-dessus des champs de texte et dans les fenêtres modales (rendues au-dessus de tout). */
 
@@ -1150,50 +1150,54 @@ html.has-cursor:has(dialog[open]) * {
   cursor: auto !important;
 }
 
-html.has-cursor:has(dialog[open]) :is(.cursor__arrow, .cursor__shard),
-html.cursor-out :is(.cursor__arrow, .cursor__shard),
-html.cursor-text :is(.cursor__arrow, .cursor__shard) {
+html.has-cursor:has(dialog[open]) .cursor__hand,
+html.cursor-out .cursor__hand,
+html.cursor-text .cursor__hand {
   opacity: 0;
 }
 
-/* Facettes : quatre tons de l'encre et un éclat violet, cerclés d'un fin trait de la couleur
+/* Facettes : quatre tons de l'encre et un pouce violet, cerclés d'un fin trait de la couleur
    du fond pour rester visibles sur une page claire, une section sombre ou une affiche. */
 .cursor {
   display: contents;
-  --f1: #4a4d55;
+  --f1: #5a5d66;
   --f2: #16181c;
   --f3: #6b6e76;
   --f4: #2b2d33;
-  --f5: #3a3c43;
+  --f5: #44474f;
+  --f7: #3a3c43;
   --edge: #faf8f4;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) .cursor {
-    --f1: #f2efe9;
+    --f1: #ffffff;
     --f2: #c9c5bd;
-    --f3: #ffffff;
+    --f3: #e6e2da;
     --f4: #a9a59c;
-    --f5: #dcd8d0;
+    --f5: #d4d0c8;
+    --f7: #bdb9b0;
     --edge: #0d0e10;
   }
 }
 
 :root[data-theme='dark'] .cursor {
-  --f1: #f2efe9;
+  --f1: #ffffff;
   --f2: #c9c5bd;
-  --f3: #ffffff;
+  --f3: #e6e2da;
   --f4: #a9a59c;
-  --f5: #dcd8d0;
+  --f5: #d4d0c8;
+  --f7: #bdb9b0;
   --edge: #0d0e10;
 }
 
-.cursor__arrow,
-.cursor__shard {
+/* Le bout de l'index (16 ; 0,5 sur 40) tombe exactement sous la souris. */
+.cursor__hand {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
+  margin: -0.4px 0 0 -13.6px;
   pointer-events: none;
   will-change: transform;
   transition: opacity 0.2s var(--ease-ui);
@@ -1201,7 +1205,11 @@ html.cursor-text :is(.cursor__arrow, .cursor__shard) {
 
 .cursor svg {
   display: block;
+  width: 34px;
+  height: 34px;
   overflow: visible;
+  transform-origin: 13.6px 0.4px;
+  transition: transform 0.25s var(--ease-out);
 }
 
 .cursor polygon {
@@ -1210,72 +1218,25 @@ html.cursor-text :is(.cursor__arrow, .cursor__shard) {
   stroke-linejoin: round;
 }
 
-/* La pointe (1, 1) du dessin tombe exactement sous la souris. */
-.cursor__arrow {
-  margin: -1px 0 0 -1px;
-}
-
-.cursor__arrow svg {
-  width: 34px;
-  height: 34px;
-}
-
-.facet {
-  transform-box: fill-box;
-  transform-origin: 0 0;
-  transition: transform 0.35s var(--ease-out);
-}
-
 .facet--1 { fill: var(--f1); }
-.facet--2 { fill: var(--f3); }
-.facet--3 { fill: var(--f5); }
+.facet--2 { fill: var(--f2); }
+.facet--3 { fill: var(--f3); }
 .facet--4 { fill: var(--f4); }
-.facet--5 { fill: var(--f3); }
+.facet--5 { fill: var(--f5); }
 .facet--6 { fill: var(--accent); }
-.facet--7 { fill: var(--f2); }
+.facet--7 { fill: var(--f7); }
 
-/* Sur ce qui se clique, la flèche s'ouvre : chaque facette s'écarte du cœur. */
-.cursor.is-link .facet--1 { transform: translate(1px, -3px) rotate(-3deg); }
-.cursor.is-link .facet--2 { transform: translate(5px, -2px); }
-.cursor.is-link .facet--3 { transform: translate(4px, 3px); }
-.cursor.is-link .facet--4 { transform: translate(3px, 6px) rotate(4deg); }
-.cursor.is-link .facet--5 { transform: translate(-2px, 5px); }
-.cursor.is-link .facet--7 { transform: translate(-3px, 1px) rotate(3deg); }
-.cursor.is-link .facet--6 { transform: translate(8px, 2px) rotate(10deg); }
-
-/* Au clic, elle se resserre. */
-.cursor__arrow svg {
-  transform-origin: 1px 1px;
-  transition: transform 0.25s var(--ease-out);
+/* Sur ce qui se clique, la main s'incline pour pointer ; au clic, elle appuie. */
+.cursor.is-link svg {
+  transform: rotate(-12deg) scale(1.08);
 }
 
-.cursor.is-down .cursor__arrow svg {
-  transform: scale(0.78);
+.cursor.is-down svg {
+  transform: rotate(-12deg) scale(0.82);
   transition-duration: 0.1s;
 }
 
-/* Les éclats qui suivent, en bas à droite de la pointe, chacun avec son retard. */
-.cursor__shard svg {
-  width: 14px;
-  height: 14px;
-  transition: transform 0.4s var(--ease-out);
-}
-
-.cursor__shard polygon {
-  fill: var(--f1);
-}
-
-.cursor__shard--1 { margin: 30px 0 0 4px; }
-.cursor__shard--2 { margin: 36px 0 0 22px; }
-.cursor__shard--3 { margin: 22px 0 0 34px; }
-.cursor__shard--2 polygon { fill: var(--accent); }
-.cursor__shard--3 polygon { fill: var(--f3); }
-
-.cursor.is-link .cursor__shard--1 svg { transform: translate(-6px, 6px) rotate(-30deg) scale(1.2); }
-.cursor.is-link .cursor__shard--2 svg { transform: translate(4px, 8px) rotate(40deg) scale(1.3); }
-.cursor.is-link .cursor__shard--3 svg { transform: translate(8px, -2px) rotate(70deg) scale(1.1); }
-
-/* Sur une affiche : une étiquette « Voir » à côté de la pointe. */
+/* Sur une affiche : une étiquette « Voir » à côté de la main. */
 .cursor__label {
   position: absolute;
   top: 30px;
@@ -1303,14 +1264,8 @@ html.cursor-text :is(.cursor__arrow, .cursor__shard) {
   transform: none;
 }
 
-.cursor.is-view .cursor__shard {
-  opacity: 0;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .facet,
-  .cursor__arrow svg,
-  .cursor__shard svg,
+  .cursor svg,
   .cursor__label {
     transition: none;
   }

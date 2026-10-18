@@ -6,14 +6,10 @@ const MOUSE = '(hover: hover) and (pointer: fine)';
 const LINK = 'a[href], button, [role="button"], label, summary, select, input[type="checkbox"], input[type="radio"]';
 const TEXT = 'input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]), textarea, [contenteditable="true"]';
 
-/** Éclats qui suivent la flèche, chacun avec son retard (part de la distance parcourue par image). */
-const SHARDS = [0.3, 0.2, 0.13];
-
 /**
- * Curseur du site, en éclats : une flèche taillée en facettes (comme du papier plié) dont la pointe
- * est exactement le point de clic, suivie de trois petits éclats qui la rattrapent avec retard.
- * Sur ce qui se clique, les facettes s'écartent ; au clic, elles se resserrent ; sur une affiche,
- * une étiquette « Voir » apparaît ; au-dessus d'un champ, le curseur texte reprend la main.
+ * Curseur du site : une main taillée en facettes, index levé ; le bout du doigt est exactement
+ * le point de clic. Sur ce qui se clique, la main s'incline pour pointer ; au clic, elle appuie ;
+ * sur une affiche, une étiquette « Voir » apparaît ; au-dessus d'un champ, le curseur texte reprend la main.
  * Les positions passent par transform, une fois par image ; aucune mise à jour React au mouvement.
  * Sans souris, sans JavaScript ou dans une fenêtre modale, le curseur du système reste en place.
  */
@@ -21,8 +17,7 @@ export function Cursor() {
   const { t } = useLanguage();
   const [on, setOn] = useState(false);
   const box = useRef<HTMLDivElement>(null);
-  const arrow = useRef<HTMLDivElement>(null);
-  const shards = useRef<(HTMLDivElement | null)[]>([]);
+  const hand = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mq = window.matchMedia(MOUSE);
@@ -35,25 +30,14 @@ export function Cursor() {
   useEffect(() => {
     if (!on) return;
     const root = document.documentElement;
-    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     root.classList.add('has-cursor');
     let x = -100;
     let y = -100;
-    const trail = SHARDS.map(() => ({ x, y }));
     let frame = 0;
 
     const render = () => {
       frame = 0;
-      arrow.current!.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      let moving = false;
-      trail.forEach((p, i) => {
-        // Chaque éclat parcourt une part de la distance restante (aucun retard en mouvement réduit).
-        p.x = still ? x : p.x + (x - p.x) * SHARDS[i];
-        p.y = still ? y : p.y + (y - p.y) * SHARDS[i];
-        if (Math.abs(x - p.x) > 0.3 || Math.abs(y - p.y) > 0.3) moving = true;
-        shards.current[i]!.style.transform = `translate3d(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px, 0)`;
-      });
-      if (moving) frame = requestAnimationFrame(render);
+      hand.current!.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     };
     const request = () => {
       if (!frame) frame = requestAnimationFrame(render);
@@ -96,29 +80,17 @@ export function Cursor() {
   if (!on) return null;
   return (
     <div ref={box} className="cursor" aria-hidden="true">
-      {SHARDS.map((_, i) => (
-        <div
-          key={i}
-          ref={(el) => {
-            shards.current[i] = el;
-          }}
-          className={`cursor__shard cursor__shard--${i + 1}`}
-        >
-          <svg viewBox="0 0 20 20" focusable="false">
-            <polygon points={['1,1 19,6 7,8', '2,2 17,4 6,18', '1,9 19,1 13,16'][i]} />
-          </svg>
-        </div>
-      ))}
-      <div ref={arrow} className="cursor__arrow">
-        <svg viewBox="0 0 44 44" focusable="false">
-          {/* Facettes de la flèche ; la pointe (1, 1) est le point de clic. */}
-          <polygon className="facet facet--1" points="1,1 34,13 16,16" />
-          <polygon className="facet facet--2" points="16,16 34,13 27,19" />
-          <polygon className="facet facet--3" points="16,16 27,19 30,28" />
-          <polygon className="facet facet--4" points="16,16 30,28 28,42 20,29" />
-          <polygon className="facet facet--5" points="16,16 20,29 13,34" />
-          <polygon className="facet facet--7" points="1,1 16,16 13,34" />
-          <polygon className="facet facet--6" points="27,19 42,30 30,28" />
+      <div ref={hand} className="cursor__hand">
+        <svg viewBox="0 0 40 40" focusable="false">
+          {/* Facettes de la main ; le bout de l'index (16, 0.5) est le point de clic. */}
+          <polygon className="facet facet--2" points="16,0.5 13,3 13,20 16,20" />
+          <polygon className="facet facet--1" points="16,0.5 19,3 19,20 16,20" />
+          <polygon className="facet facet--3" points="19,13 24,12.5 24.5,22 19,22" />
+          <polygon className="facet facet--5" points="24,14 29,14 29.5,23 24.5,22" />
+          <polygon className="facet facet--3" points="29,16 33,17 33,24 29.5,23" />
+          <polygon className="facet facet--7" points="13,20 22,22 20,38 14,38 10,31 9,26 13,27" />
+          <polygon className="facet facet--4" points="13,20 33,24 32,31 27,38 20,38 22,22" />
+          <polygon className="facet facet--6" points="13,20 8,16.5 5.5,18.5 9,26 13,27" />
         </svg>
         <span className="cursor__label">{t.posters.open.split(' ')[0]}</span>
       </div>
