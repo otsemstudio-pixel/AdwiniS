@@ -83,7 +83,13 @@ export interface Content {
     excluded: string[];
     cta: string;
   };
-  fixed: SectionHead & { intro: string; from: string; offers: FixedOffer[] };
+  fixed: SectionHead & {
+    intro: string;
+    from: string;
+    offers: FixedOffer[];
+    /** Offre à venir : pas de prix, un bouton pour se signaler intéressé (message WhatsApp prérempli). */
+    upcoming: { name: string; description: string; badge: string; cta: string; message: string };
+  };
   /** Réalisations : la série d'affiches (fichiers dans data/posters.ts, même ordre). */
   posters: SectionHead & {
     intro: string;

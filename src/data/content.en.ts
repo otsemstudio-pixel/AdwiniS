@@ -156,6 +156,14 @@ const en: Content = {
         description: 'A typeface or a family of icons drawn for your brand and your market.',
       },
     ],
+    upcoming: {
+      name: 'Professional AI video',
+      description:
+        'Brand videos produced with artificial intelligence, directed and finished by the studio. This service is coming soon: if you want it, contact us and you’ll be the first to know.',
+      badge: 'Coming soon',
+      cta: 'I’m interested',
+      message: 'Hello Adwini Studio, I’m interested in professional AI video. Could you let me know as soon as the service is available?',
+    },
   },
   posters: {
     label: 'Selected work',

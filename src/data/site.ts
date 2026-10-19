@@ -50,5 +50,8 @@ export const fixedPricing = {
   custom: { price: 4000, code: 'FIX—003' },
 } as const;
 
+/** Offre à venir (vidéo IA) : un code, pas encore de prix. */
+export const upcomingOffer = { code: 'FIX—004' } as const;
+
 /** Un emplacement non rempli contient encore des crochets. */
 export const isPlaceholder = (value: string) => value.includes('[');

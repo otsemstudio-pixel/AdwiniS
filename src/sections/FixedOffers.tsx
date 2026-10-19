@@ -1,7 +1,8 @@
 import { CountUp } from '../components/CountUp';
 import { Section } from '../components/Section';
-import { fixedPricing } from '../data/site';
+import { fixedPricing, site, upcomingOffer } from '../data/site';
 import { useLanguage } from '../hooks/useLanguage';
+import { quickWhatsappUrl } from '../utils/brief';
 import { formatUSD } from '../utils/format';
 
 export function FixedOffers({ index }: { index: number }) {
@@ -26,6 +27,17 @@ export function FixedOffers({ index }: { index: number }) {
             </li>
           );
         })}
+        <li className="offer offer--upcoming reveal">
+          <p className="code">{upcomingOffer.code}</p>
+          <h3 className="offer__name">{f.upcoming.name}</h3>
+          <p className="offer__desc">{f.upcoming.description}</p>
+          <div className="offer__price offer__soon">
+            <span className="offer__badge">{f.upcoming.badge}</span>
+            <a href={quickWhatsappUrl(site.whatsappNumber, f.upcoming.message)} className="btn btn--outline" target="_blank" rel="noopener noreferrer">
+              {f.upcoming.cta}
+            </a>
+          </div>
+        </li>
       </ul>
     </Section>
   );

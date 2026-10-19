@@ -158,6 +158,14 @@ const fr: Content = {
         description: 'Un caractère ou une famille de pictogrammes dessinés pour votre marque et votre marché.',
       },
     ],
+    upcoming: {
+      name: 'Vidéo IA professionnelle',
+      description:
+        'Des vidéos de marque produites avec l’intelligence artificielle, dirigées et finalisées par le studio. Ce service arrive bientôt : si vous êtes intéressé, contactez-nous et nous vous préviendrons en premier.',
+      badge: 'Bientôt disponible',
+      cta: 'Je suis intéressé',
+      message: 'Bonjour Adwini Studio, je suis intéressé par la vidéo IA professionnelle. Pouvez-vous me prévenir dès que le service est disponible ?',
+    },
   },
   posters: {
     label: 'Réalisations',
