@@ -497,21 +497,222 @@
 
 .offer:nth-child(2) { padding-left: 8%; }
 .offer:nth-child(3) { padding-left: 16%; }
-/* Offre à venir : elle repart du bord (elle n'est pas une marche de plus), trait pointillé,
-   code en violet, un badge et un bouton à la place du prix. */
+/* Offre à venir : un panneau au contour pointillé, comme un brouillon, avec son fond animé
+   (components/AiVideoScene.tsx) ; un badge et un bouton à la place du prix. */
 .offer.offer--upcoming {
-  padding-left: 0;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: 2.5rem;
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2.5rem);
+  border: var(--stroke) dashed var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
 }
 
 .offer.offer--upcoming::before {
-  height: 0;
-  border-radius: 0;
-  background: none;
-  border-top: var(--stroke) dashed var(--line);
+  display: none;
 }
 
 .offer--upcoming .code {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
   color: var(--accent);
+}
+
+/* « En préparation… » : les trois points s'allument tour à tour. */
+.offer__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+}
+
+.offer__status::before {
+  content: '';
+  width: 0.5em;
+  height: 0.5em;
+  margin-right: 0.5em;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.offer__dots span {
+  display: inline-block;
+}
+
+/* ─── Le fond animé ─── */
+
+.aiscene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: var(--accent);
+  opacity: 0.24;
+  pointer-events: none;
+}
+
+.aiscene svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.aiscene__film rect {
+  fill: currentColor;
+  stroke: none;
+}
+
+.aiscene__fill {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0;
+}
+
+/* Image fixe (téléphone, mouvement réduit) : deux images déjà « générées », la barre aux deux tiers. */
+.aiscene__frame:nth-child(-n + 2) .aiscene__fill {
+  opacity: 0.45;
+}
+
+.aiscene__scan {
+  opacity: 0;
+}
+
+.aiscene__link {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.aiscene__node,
+.aiscene__play circle {
+  fill: var(--bg);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.aiscene__play {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.aiscene__play path {
+  fill: currentColor;
+  stroke: none;
+}
+
+.aiscene__track {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0.3;
+}
+
+.aiscene__progress {
+  fill: currentColor;
+  stroke: none;
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+  transform: scaleX(0.66);
+}
+
+/* Les animations n'existent que sur ordinateur, à l'écran (classe is-playing, usePlayWhenVisible). */
+.offer--upcoming.is-playing .aiscene__film {
+  animation: ai-film 1.2s linear infinite;
+}
+
+.offer--upcoming.is-playing .aiscene__fill {
+  animation: ai-generate 6s var(--ease-in-out) infinite;
+  animation-delay: calc(var(--i) * 0.7s);
+}
+
+.offer--upcoming.is-playing .aiscene__scan {
+  animation: ai-scan 6s linear infinite;
+}
+
+.offer--upcoming.is-playing .aiscene__link {
+  animation: ai-link 7s var(--ease-in-out) infinite;
+  animation-delay: calc(var(--i) * 0.35s);
+}
+
+.offer--upcoming.is-playing .aiscene__node {
+  animation: ai-node 2.4s var(--ease-in-out) infinite alternate;
+  animation-delay: calc(var(--i) * -0.3s);
+}
+
+.offer--upcoming.is-playing .aiscene__play {
+  animation: ai-play 2s var(--ease-in-out) infinite;
+}
+
+.offer--upcoming.is-playing .aiscene__progress {
+  animation: ai-progress 12s var(--ease-out) infinite;
+}
+
+.offer--upcoming.is-playing .offer__dots span {
+  animation: ai-dot 1.4s steps(1) infinite;
+}
+
+.offer--upcoming.is-playing .offer__dots span:nth-child(2) { animation-delay: 0.2s; }
+.offer--upcoming.is-playing .offer__dots span:nth-child(3) { animation-delay: 0.4s; }
+
+.offer--upcoming.is-playing .offer__status::before {
+  animation: ai-play 1.6s var(--ease-in-out) infinite;
+}
+
+@keyframes ai-film {
+  to { transform: translateX(-40px); }
+}
+
+@keyframes ai-generate {
+  0%, 8% { opacity: 0; }
+  20%, 70% { opacity: 0.45; }
+  85%, 100% { opacity: 0; }
+}
+
+@keyframes ai-scan {
+  0% { opacity: 0; transform: translateX(0); }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(640px); }
+}
+
+@keyframes ai-link {
+  0% { stroke-dashoffset: 1; }
+  35%, 75% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -1; }
+}
+
+@keyframes ai-node {
+  from { transform: scale(0.7); }
+  to { transform: scale(1.3); }
+}
+
+@keyframes ai-play {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.6; }
+}
+
+/* L'avancement progresse puis plafonne : le produit est en route, pas encore livré. */
+@keyframes ai-progress {
+  0% { transform: scaleX(0.05); }
+  70%, 100% { transform: scaleX(0.92); }
+}
+
+@keyframes ai-dot {
+  0%, 100% { opacity: 0.2; }
+  33% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aiscene *,
+  .offer__dots span,
+  .offer__status::before {
+    animation: none !important;
+  }
 }
 
 .offer__soon {

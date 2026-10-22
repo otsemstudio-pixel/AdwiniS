@@ -161,6 +161,7 @@ const en: Content = {
       description:
         'Brand videos produced with artificial intelligence, directed and finished by the studio. This service is coming soon: if you want it, contact us and you’ll be the first to know.',
       badge: 'Coming soon',
+      status: 'In the works',
       cta: 'I’m interested',
       message: 'Hello Adwini Studio, I’m interested in professional AI video. Could you let me know as soon as the service is available?',
     },

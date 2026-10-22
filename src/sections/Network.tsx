@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { LogoMark } from '../components/Logo';
 import { NetworkScene, type SceneKind } from '../components/NetworkScene';
 import { Section } from '../components/Section';
 import { useLanguage } from '../hooks/useLanguage';
+import { usePlayWhenVisible } from '../hooks/usePlayWhenVisible';
 
 /** Une scène animée par métier, dans l'ordre de network.specialists (identique en français et en anglais). */
 const SCENES: SceneKind[] = ['motion', 'illustration', 'translation', 'voice', 'code'];
@@ -13,25 +14,7 @@ export function Network({ index }: { index: number }) {
   const n = t.network;
   const list = useRef<HTMLUListElement>(null);
 
-  // Les fonds animés ne jouent que sur ordinateur et lorsque la liste est à l'écran ;
-  // sur téléphone et tablette, chaque scène reste une image fixe (le défilement reste fluide).
-  useEffect(() => {
-    const el = list.current;
-    if (!el) return;
-    const mq = window.matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)');
-    let visible = false;
-    const sync = () => el.classList.toggle('is-playing', visible && mq.matches);
-    const io = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting;
-      sync();
-    });
-    io.observe(el);
-    mq.addEventListener('change', sync);
-    return () => {
-      io.disconnect();
-      mq.removeEventListener('change', sync);
-    };
-  }, []);
+  usePlayWhenVisible(list);
   return (
     <Section id="reseau" index={index} label={n.label} title={n.title} className="network">
       <div className="network__text reveal">
